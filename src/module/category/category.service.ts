@@ -4,4 +4,8 @@ export class CategoryService {
     async createCategory(data: CreateCategoryInput) {
 
     }
+
+    async getCategories() {
+        
+    }
 }
