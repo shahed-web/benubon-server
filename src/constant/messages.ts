@@ -12,6 +12,10 @@ export const CATEGORY_MESSAGES = {
         SUCCESS: "Category deleted",
         FAILED: "Category delete failed",
     },
+    RETRIEVE : {
+        SUCCESS: "Category retrived",
+        FAILED: "Category retrived",
+    },
     FETCH : {
         SUCCESS: "Category fetched",
         FAILED: "Category fetch failed",

@@ -9,15 +9,16 @@ interface Category {
     children?: Category[]
 }
 
-export interface CreateCategoryRequest {
+export interface CategoryInputRequest {
     name: string;
     parentSlug?: string;
 }
 
-export interface CreateCategoryResponse {
+export interface CategoryResponse {
     success: boolean;
     message: string;
     data?: { 
+        id: number;
         name: string;
         slug: string;  
     }
@@ -27,4 +28,8 @@ export interface FetchCategoryResponse {
     success: boolean;
     message: string;
     data?: Category[]
+}
+
+export interface CategoryParams {
+    categoryId: number;
 }
