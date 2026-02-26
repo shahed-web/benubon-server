@@ -13,6 +13,30 @@ datasource db {
   provider = "postgresql"
 }
 
+enum BuyerStatus {
+  lead
+  active
+  dormant
+}
+
+enum BuyerType {
+  retailer
+  wholesaler
+  agent
+  brand
+}
+
+enum ProductStatus {
+  ACTIVE
+  DRAFT
+}
+
+enum InquiryStatus {
+  new
+  replied
+  closed
+}
+
 model Category {
   id       Int        @id @default(autoincrement())
   name     String
@@ -32,6 +56,7 @@ model Product {
   id          Int              @id @default(autoincrement())
   sku         String           @unique
   name        String
+  slug        String           @unique
   description String
   isActive    Boolean          @default(true)
   imagesReady Boolean          @default(false)
@@ -40,21 +65,18 @@ model Product {
   categories  Category[]
   variants    ProductVariant[]
   images      ProductImage[]
+  artisanId   Int?
+  artisan     Artisan?         @relation(fields: [artisanId], references: [id])
+  inquiries   Inquiry[]
   status      ProductStatus    @default(DRAFT)
   createdAt   DateTime         @default(now()) @db.Timestamp(3)
   updatedAt   DateTime         @updatedAt
-}
-
-enum ProductStatus {
-  ACTIVE
-  DRAFT
 }
 
 model ProductVariant {
   id        Int    @id @default(autoincrement())
   productId Int
   name      String
-  sku       String
 
   material String
   size     String
@@ -109,4 +131,67 @@ model ProductImage {
   product   Product  @relation(fields: [productId], references: [id])
   createdAt DateTime @default(now()) @db.Timestamp(3)
   updatedAt DateTime @updatedAt
+}
+
+model Artisan {
+  id               Int      @id @default(autoincrement())
+  name             String
+  location         String?
+  materials        String[]
+  monthlyCapacity  Int?
+  reliabilityScore Int?
+  notes            String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  products Product[]
+}
+
+model Buyer {
+  id          String  @id @default(uuid())
+  name        String?
+  email       String  @unique
+  country     String?
+  companyName String?
+  phone       String?
+
+  type   BuyerType?
+  status BuyerStatus @default(lead)
+
+  lastContactAt DateTime?
+  notes         String?
+
+  inquiries Inquiry[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([email])
+  @@index([country])
+  @@index([status])
+}
+
+model Inquiry {
+  id      String        @id @default(uuid())
+  message String
+  country String?
+  status  InquiryStatus @default(new)
+
+  productId Int?
+  product   Product? @relation(fields: [productId], references: [id])
+
+  buyerId String
+  buyer   Buyer  @relation(fields: [buyerId], references: [id])
+
+  source      String?
+  inquiryType String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([buyerId])
+  @@index([productId])
 }
