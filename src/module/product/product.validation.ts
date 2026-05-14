@@ -4,11 +4,12 @@ import {z} from "zod";
 const imageSchema = z.object({
     publicId: z.string(),
     url: z.string(),
-    width: z.number().int().positive().optional(),
-    height: z.number().int().positive().optional(),
-    position: z.number().int().positive().optional(),
-    altText: z.string().optional(),
+    width: z.number(),
+    height: z.number(),
+    position: z.number(),
+    altText: z.string(),
 })
+
 const priceSchema = z.object({
     create: z.array(
         z.object({
@@ -21,7 +22,7 @@ const priceSchema = z.object({
 
 const inventorySchema = z.object({
     create: z.object({
-        quantity: z.number().int().nonnegative,
+        quantity: z.number().int(),
         warehouse: z.string()
     })
 })
@@ -60,7 +61,6 @@ export const productSchema = z.object({
     
     categories: categoriesSchema,
     variants: variantSchema,
-    images: z.array(imageSchema).optional()
     // artisan: artisanSchema.optional()
 })
 
