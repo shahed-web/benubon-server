@@ -1,8 +1,11 @@
+import _ from "lodash"
 import { AUTH_MESSAGES } from "../../constant/messages";
 import { prisma } from "../../lib/prisma";
 import { hashPassword, validatePassword } from "../../provider/bcrypt.provider";
+import { generateJWT } from "../../provider/jwt.provider";
 import { AlreadyExistsError, NotFoundError, UnauthorizedError } from "../../utils/errors/app-error";
 import type { AuthInput } from "./auth.validations";
+import { envConfig } from "../../config/env.config";
 
 export class AuthService {
     async register (data: AuthInput) {
@@ -43,8 +46,23 @@ export class AuthService {
         const validateUser = await validatePassword(data.password, user.password)
 
         if (!validateUser) throw new UnauthorizedError(AUTH_MESSAGES.LOGIN.FAILED)
+        
+        const accessToken = generateJWT(_.pick(user, ["id", "name", "email", "isActive"]), envConfig.JWT.ACCESS_TOKEN_EXPIRY)
+        
+        const refreshToken = generateJWT({
+            ... _.pick(user, ["id", "name", "email", "isActive"]),
+            tokenId:envConfig.JWT.REFRESH_TOKEN_ID
+        }, envConfig.JWT.REFRESH_TOKEN_EXPIRY)
+        
+        await prisma.sessions.create({
+            data: {
+                token: refreshToken
+            }
+        })
 
-        return user
+        return {
+            user, accessToken, refreshToken
+        }
     
     }
 }

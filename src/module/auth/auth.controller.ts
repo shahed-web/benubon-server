@@ -24,12 +24,29 @@ export class AuthController {
     async login (req:Request<{}, {}, AuthInputRequest>, res:Response<AuthResponse>, next:NextFunction) {
         try {
             const parsed = authSchema.parse(req.body)
-            const loggedUser = await authService.login(parsed)
+            const loginData = await authService.login(parsed)
 
+            res.cookie("accessToken", loginData.accessToken, {
+                httpOnly: true,
+                sameSite: "strict",
+                secure: true
+            })
+            
+            res.cookie("refreshToken", loginData.refreshToken, {
+                httpOnly: true,
+                sameSite: "strict",
+                secure: true
+            })
+            
             res.status(200).json({
                 success: true,
-                message: AUTH_MESSAGES.LOGIN.SUCCESS
+                message: AUTH_MESSAGES.LOGIN.SUCCESS,
+                data: {
+                    refreshToken: loginData.refreshToken,
+                    accessToken: loginData.accessToken
+                }
             })
+            
         }catch(error) {
             next(error)
         }
