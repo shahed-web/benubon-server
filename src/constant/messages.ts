@@ -50,3 +50,16 @@ export const PRODUCT_MESSAGES = {
         FAILED: "Product fetch failed",
     },
 }
+
+export const AUTH_MESSAGES = {
+    REGISTER: {
+        SUCCESS: "User registered",
+        FAILED: "Registration unsuccessful",
+        EXISTS: "User exists"
+    },
+    LOGIN: {
+        SUCCESS: "Login successful",
+        FAILED: "Login failed",
+        USER_NOT_FOUND: "User not found"
+    }
+}
