@@ -61,5 +61,11 @@ export const AUTH_MESSAGES = {
         SUCCESS: "Login successful",
         FAILED: "Login failed",
         USER_NOT_FOUND: "User not found"
+    },
+    AUTHORIZE: {
+        SUCCESS: "Authorized",
+        FAILED: "Unauthorized",
+        EXPIRED: "Token expired",
+        INVALID_TOKEN: "Invalid token"
     }
 }
