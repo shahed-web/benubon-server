@@ -75,5 +75,21 @@ export const PERMISSION_MESSAGES = {
         SUCCESS: "Permission created",
         FAILED: "Permission creation failed",
         EXISTS: "Permission exisits"
+    },
+    ASSIGN: {
+        SUCCESS: "Permission assigned successfully",
+        FAILED: "Permission assign unsuccessful",
+    }
+}
+
+export const ROLE_MESSAGES = {
+    CREATE:{
+        SUCCESS:"Role created",
+        FAILED: "Role creation failed",
+        EXISTS: "Role exists",
+    },
+    ASSIGN:{
+        SUCCESS:"Role assigned successful",
+        FAILED: "Role assigned unnsuccessful"
     }
 }
