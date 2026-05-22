@@ -2,10 +2,11 @@ import _ from "lodash"
 import { AUTH_MESSAGES } from "../../constant/messages";
 import { prisma } from "../../lib/prisma";
 import { hashPassword, validatePassword } from "../../provider/bcrypt.provider";
-import { generateJWT, jwtVerify, type JwtPayloadType } from "../../provider/jwt.provider";
+import { generateJWT, jwtVerify } from "../../provider/jwt.provider";
 import { AlreadyExistsError, NotFoundError, UnauthorizedError } from "../../utils/errors/app-error";
 import type { AuthInput } from "./auth.validations";
 import { envConfig } from "../../config/env.config";
+import type { JwtPayloadType } from "./auth.types";
 
 export class AuthService {
     async register (data: AuthInput) {
@@ -36,6 +37,17 @@ export class AuthService {
         const user = await prisma.user.findUnique({
             where: {
                 email: data.email
+            },
+            include: {
+                role: {
+                    include: {
+                        permissions: {
+                            include: {
+                                permission: true
+                            }
+                        }
+                    }
+                }
             }
         })
 
@@ -46,11 +58,22 @@ export class AuthService {
         const validateUser = await validatePassword(data.password, user.password)
 
         if (!validateUser) throw new UnauthorizedError(AUTH_MESSAGES.LOGIN.FAILED)
+
+        const permissions = user.role?.permissions.map(item => item.permission.name) || []
         
-        const accessToken = generateJWT(_.pick(user, ["id", "name", "email", "isActive"]), envConfig.JWT.ACCESS_TOKEN_EXPIRY)
+        const jwtPayload: JwtPayloadType = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            isActive: user.isActive,
+            role: user.role?.name || "",
+            permissions
+        }
+
+        const accessToken = generateJWT(jwtPayload, envConfig.JWT.ACCESS_TOKEN_EXPIRY)
         
         const refreshToken = generateJWT({
-            ... _.pick(user, ["id", "name", "email", "isActive"]),
+            ... jwtPayload,
             tokenId:envConfig.JWT.REFRESH_TOKEN_ID
         }, envConfig.JWT.REFRESH_TOKEN_EXPIRY)
         
@@ -91,13 +114,35 @@ export class AuthService {
         const user = await prisma.user.findUnique({
             where: {
                 id: decoded.id
+            },
+            include: {
+                role: {
+                    include: {
+                        permissions: {
+                            include: {
+                                permission: true
+                            }
+                        }
+                    }
+                }
             }
         })
 
         if (!user) {
             throw new UnauthorizedError("User not found")
         }
-        const accessToken = generateJWT(_.pick(user, ["id", "name", "email", "isActive"]), envConfig.JWT.ACCESS_TOKEN_EXPIRY)
+
+        const permissions = user.role?.permissions.map(item => item.permission.name) || []
+        
+        const jwtPayload: JwtPayloadType = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            isActive: user.isActive,
+            role: user.role?.name || "",
+            permissions
+        }
+        const accessToken = generateJWT(jwtPayload, envConfig.JWT.ACCESS_TOKEN_EXPIRY)
         return {
             success: true,
             accessToken: accessToken

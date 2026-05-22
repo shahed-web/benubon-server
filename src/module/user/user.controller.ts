@@ -1,7 +1,7 @@
 import _ from "lodash";
 import type { NextFunction, Request, Response } from "express";
 import { UserService } from "./user.service";
-import { ROLE_MESSAGES } from "../../constant/messages";
+import { PERMISSION_MESSAGES, ROLE_MESSAGES } from "../../constant/messages";
 
 const userService = new UserService()
 

@@ -66,6 +66,7 @@ export const AUTH_MESSAGES = {
         SUCCESS: "Authorized",
         FAILED: "Unauthorized",
         EXPIRED: "Token expired",
+        FORBIDDEN: "Forbidden",
         INVALID_TOKEN: "Invalid token"
     },
 }
@@ -93,3 +94,5 @@ export const ROLE_MESSAGES = {
         FAILED: "Role assigned unnsuccessful"
     }
 }
+
+

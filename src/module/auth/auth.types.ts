@@ -12,3 +12,13 @@ export interface AuthResponse {
         refreshToken: string;
     }
 }
+
+export interface JwtPayloadType {
+    id: string,
+    name: string,
+    email: string,
+    isActive: boolean
+    tokenId?: string
+    role: string
+    permissions: string[]
+}

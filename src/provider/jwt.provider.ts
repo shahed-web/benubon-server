@@ -1,13 +1,16 @@
 import jwt, { type SignOptions } from "jsonwebtoken";
 import { envConfig } from "../config/env.config";
+import type { JwtPayloadType } from "../module/auth/auth.types";
 
-export interface JwtPayloadType {
-    id: string,
-    name: string,
-    email: string,
-    isActive: boolean
-    tokenId?: string
-}
+// export interface JwtPayloadType {
+//     id: string,
+//     name: string,
+//     email: string,
+//     isActive: boolean
+//     tokenId?: string
+//     role?: string
+//     permission: string[]
+// }
 
 export function generateJWT (data: JwtPayloadType, expiresIn: string) {
     const jwtSecret = envConfig.JWT.SECRET
@@ -28,5 +31,5 @@ export function generateRefreshToken (data: JwtPayloadType) {
 
 export function jwtVerify (token: string) {
     const jwtVerify = envConfig.JWT.SECRET
-    return jwt.verify(token, jwtVerify)
+    return jwt.verify(token, jwtVerify) as JwtPayloadType
 }
