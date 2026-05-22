@@ -2,7 +2,7 @@ import _ from "lodash"
 import { AUTH_MESSAGES } from "../../constant/messages";
 import { prisma } from "../../lib/prisma";
 import { hashPassword, validatePassword } from "../../provider/bcrypt.provider";
-import { generateJWT } from "../../provider/jwt.provider";
+import { generateJWT, jwtVerify, type JwtPayloadType } from "../../provider/jwt.provider";
 import { AlreadyExistsError, NotFoundError, UnauthorizedError } from "../../utils/errors/app-error";
 import type { AuthInput } from "./auth.validations";
 import { envConfig } from "../../config/env.config";
@@ -64,5 +64,43 @@ export class AuthService {
             user, accessToken, refreshToken
         }
     
+    }
+
+    async refreshTokenHandler (refreshToken: string) {
+        let decoded;
+        try {
+            decoded = jwtVerify(refreshToken) as JwtPayloadType
+        } catch (error) {
+            await prisma.sessions.delete({
+                where: {
+                    token: refreshToken
+                }
+            })
+            return {success: false}
+        }
+
+        const storedToken = await prisma.sessions.findUnique({
+            where: {
+                token: refreshToken
+            }
+        })
+
+        if(!storedToken) {
+            throw new UnauthorizedError(AUTH_MESSAGES.AUTHORIZE.FAILED)
+        }
+        const user = await prisma.user.findUnique({
+            where: {
+                id: decoded.id
+            }
+        })
+
+        if (!user) {
+            throw new UnauthorizedError("User not found")
+        }
+        const accessToken = generateJWT(_.pick(user, ["id", "name", "email", "isActive"]), envConfig.JWT.ACCESS_TOKEN_EXPIRY)
+        return {
+            success: true,
+            accessToken: accessToken
+        }
     }
 }

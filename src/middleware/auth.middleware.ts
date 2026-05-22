@@ -2,7 +2,6 @@ import type { NextFunction, Request, Response } from "express";
 import type { JwtPayload } from "jsonwebtoken";
 import { AUTH_MESSAGES } from "../constant/messages";
 import { jwtVerify } from "../provider/jwt.provider";
-import { success } from "zod";
 
 export interface AuthenticateRequest extends Request {
     user?: string | JwtPayload
@@ -26,12 +25,14 @@ export class AuthMiddleware {
 
         } catch(error: any) {
             if(error.name === "TokenExpiredError") {
-                res.status(401).json({
+                 return res.status(401).json({
                     success: false,
                     message: AUTH_MESSAGES.AUTHORIZE.EXPIRED
                 })
             }
-            res.status(401).json({
+            res.clearCookie("accessToken")
+            res.clearCookie("refreshToken")
+            return res.status(401).json({
                 success: false,
                 message: AUTH_MESSAGES.AUTHORIZE.INVALID_TOKEN
             })

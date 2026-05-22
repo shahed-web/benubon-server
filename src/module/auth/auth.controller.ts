@@ -3,7 +3,7 @@ import type { AuthInputRequest, AuthResponse } from "./auth.types";
 import { authSchema } from "./auth.validations";
 import { AuthService } from "./auth.service";
 import { AUTH_MESSAGES } from "../../constant/messages";
-
+import { UnauthorizedError } from "../../utils/errors/app-error";
 
 const authService = new AuthService()
 
@@ -47,6 +47,42 @@ export class AuthController {
                 }
             })
             
+        }catch(error) {
+            next(error)
+        }
+    }
+
+    async refreshTokenHandler(req: Request, res: Response, next: NextFunction) {
+        try {
+            const refreshToken = req.cookies?.refreshToken
+            if(!refreshToken) {
+                throw new UnauthorizedError(AUTH_MESSAGES.AUTHORIZE.FAILED)
+            }
+            const {success, accessToken} = await authService.refreshTokenHandler(refreshToken)
+            
+            if(!success) {
+                res.clearCookie("accessToken")
+                res.clearCookie("refreshToken")
+                return res.status(401).json({
+                    success: false,
+                    message: AUTH_MESSAGES.AUTHORIZE.FAILED
+                })
+            }
+
+            res.cookie("accessToken", accessToken, {
+                httpOnly: true,
+                sameSite: "strict",
+                secure: true
+            })
+
+            res.status(200).json({
+                success: true,
+                message: AUTH_MESSAGES.LOGIN.SUCCESS,
+                data: {
+                    refreshToken: refreshToken,
+                    accessToken: accessToken
+                }
+            })
         }catch(error) {
             next(error)
         }
