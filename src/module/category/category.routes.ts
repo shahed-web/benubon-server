@@ -7,8 +7,8 @@ const controller = new CategoryController();
 const middleware = new AuthMiddleware()
 
 router.get("/view/:categoryId", controller.view.bind(controller))
-// router.get("/all-categories",  controller.getAll.bind(controller))
-router.get("/all-categories", [middleware.authenticateToken], controller.getAll.bind(controller))
+router.get("/all-categories",  controller.getAll.bind(controller))
+// router.get("/all-categories", [middleware.authenticateToken], controller.getAll.bind(controller))
 
 router.post("/create", controller.create.bind(controller))
 router.put("/update/:categoryId", controller.update.bind(controller))

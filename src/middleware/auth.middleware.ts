@@ -1,5 +1,4 @@
 import type { NextFunction, Request, Response } from "express";
-import type { JwtPayload } from "jsonwebtoken";
 import { AUTH_MESSAGES } from "../constant/messages";
 import { jwtVerify} from "../provider/jwt.provider";
 import type { JwtPayloadType } from "../module/auth/auth.types";
