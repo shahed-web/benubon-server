@@ -96,3 +96,14 @@ export const ROLE_MESSAGES = {
 }
 
 
+export const BUYER_MESSAGE = {
+    CREATE:{
+        SUCCESS:"Buyer created",
+        FAILED: "Buyer creation failed",
+        EXISTS: "Buyer exists",
+    },
+    FETCH:{
+        SUCCESS:"Buyer fetched",
+        FAILED: "Buyer fetch failed"
+    }
+}
