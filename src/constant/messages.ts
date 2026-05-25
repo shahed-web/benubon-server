@@ -89,6 +89,18 @@ export const ROLE_MESSAGES = {
         FAILED: "Role creation failed",
         EXISTS: "Role exists",
     },
+    FETCH:{
+        SUCCESS:"Role fetched",
+        FAILED: "Role fetch failed",
+    },
+    UPDATE:{
+        SUCCESS:"Role updated",
+        FAILED: "Role update failed",
+    },
+    DELETE:{
+        SUCCESS:"Role deleted",
+        FAILED: "Role delete failed",
+    },
     ASSIGN:{
         SUCCESS:"Role assigned successful",
         FAILED: "Role assigned unnsuccessful"
@@ -102,8 +114,16 @@ export const BUYER_MESSAGE = {
         FAILED: "Buyer creation failed",
         EXISTS: "Buyer exists",
     },
+    UPDATE:{
+        SUCCESS:"Buyer updated",
+        FAILED: "Buyer update failed"
+    },
     FETCH:{
         SUCCESS:"Buyer fetched",
         FAILED: "Buyer fetch failed"
+    },
+    DELETE:{
+        SUCCESS:"Buyer deleted",
+        FAILED: "Buyer delete failed"
     }
 }

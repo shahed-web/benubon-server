@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { PermissionService } from "./permission.service";
+import { PermissionController } from "./permission.controller";
 
 const router = Router()
-const controller = new PermissionService()
+const controller = new PermissionController()
 
 router.post("/create", controller.createPermission.bind(controller))
 

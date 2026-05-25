@@ -2,11 +2,37 @@ import type { NextFunction, Request, Response } from "express";
 import { roleSchema } from "./role.validations";
 import { RoleService } from "./role.service";
 import { PERMISSION_MESSAGES, ROLE_MESSAGES } from "../../constant/messages";
-import { success } from "zod";
 
 const roleService = new RoleService()
 
 export class RoleController {
+    async getRoles (req: Request, res: Response, next: NextFunction) {
+        try {
+            const roles = await roleService.getRoles()
+            res.status(200).json({
+                success: true,
+                message: ROLE_MESSAGES.FETCH.SUCCESS,
+                data: roles
+            })
+        }catch(error) {
+            next(error)
+        }
+    }
+
+    async getRoleById (req: Request, res: Response, next: NextFunction) {
+        try {
+            const id = String(req.params.id) 
+            const role = await roleService.getRoleById(id)
+            res.status(200).json({
+                success: true,
+                message: ROLE_MESSAGES.FETCH.SUCCESS,
+                data: role
+            })
+        }catch(error) {
+            next(error)
+        }
+    }
+
     async createRole(req: Request, res: Response, next: NextFunction) {
         try {
             const parsed = roleSchema.parse(req.body)
@@ -37,4 +63,33 @@ export class RoleController {
             next(error)
         }
     }
+
+    async updateRole (req: Request, res: Response, next: NextFunction) {
+        try{
+            const id = String(req.params.id)
+            const parsed = roleSchema.parse(req.body)
+            const role = await roleService.updateRole(id, parsed)
+            res.status(200).json({
+                success: true,
+                message: ROLE_MESSAGES.UPDATE.SUCCESS,
+                data: role
+            })  
+        }catch(error){
+            next(error) 
+        }
+    }
+
+    async deleteRole (req: Request, res: Response, next: NextFunction) {
+        try{
+            const id = String(req.params.id)
+            await roleService.deleteRole(id)
+            res.status(200).json({
+                success: true,
+                message: ROLE_MESSAGES.DELETE.SUCCESS,
+            })
+        }catch(error) {
+            next(error)
+        }
+    }
+
 }
