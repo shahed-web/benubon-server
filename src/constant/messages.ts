@@ -127,3 +127,23 @@ export const BUYER_MESSAGE = {
         FAILED: "Buyer delete failed"
     }
 }
+
+export const ARTISAN_MESSAGE = {
+    CREATE:{
+        SUCCESS:"Artisan created",
+        FAILED: "Artisan creation failed",
+        EXISTS: "Artisan exists",
+    },
+    UPDATE:{
+        SUCCESS:"Artisan updated",
+        FAILED: "Artisan update failed"
+    },
+    FETCH:{
+        SUCCESS:"Artisan fetched",
+        FAILED: "Artisan fetch failed"
+    },
+    DELETE:{
+        SUCCESS:"Artisan deleted",
+        FAILED: "Artisan delete failed"
+    }
+}
