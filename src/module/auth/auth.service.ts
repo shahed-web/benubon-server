@@ -7,28 +7,18 @@ import { AlreadyExistsError, NotFoundError, UnauthorizedError } from "../../util
 import type { AuthInput } from "./auth.validations";
 import { envConfig } from "../../config/env.config";
 import type { JwtPayloadType } from "./auth.types";
+import { AuthRepository } from "./auth.repository";
 
+const repository = new AuthRepository()
 export class AuthService {
     async register (data: AuthInput) {
-        const userExists = await prisma.user.findUnique({
-            where: {
-                email: data.email
-            }
-        })
-
+        const userExists = await repository.userExists(data.email)
         if(userExists) {
             throw new AlreadyExistsError(AUTH_MESSAGES.REGISTER.EXISTS)
         }
-        
         const hashedPassword = await hashPassword(data.password)
         
-        const registeredUser = await prisma.user.create({
-            data: {
-                name: data.name!,
-                email: data.email,
-                password: hashedPassword
-            }
-        })
+        const registeredUser = await repository.createUser(data, hashedPassword)    
 
         return registeredUser
     }
