@@ -24,22 +24,7 @@ export class AuthService {
     }
 
     async login (data: AuthInput) {
-        const user = await prisma.user.findUnique({
-            where: {
-                email: data.email
-            },
-            include: {
-                role: {
-                    include: {
-                        permissions: {
-                            include: {
-                                permission: true
-                            }
-                        }
-                    }
-                }
-            }
-        })
+        const user = await repository.userExists(data.email)
 
         if (!user) {
             throw new NotFoundError(AUTH_MESSAGES.LOGIN.USER_NOT_FOUND)
@@ -67,11 +52,7 @@ export class AuthService {
             tokenId:envConfig.JWT.REFRESH_TOKEN_ID
         }, envConfig.JWT.REFRESH_TOKEN_EXPIRY)
         
-        await prisma.sessions.create({
-            data: {
-                token: refreshToken
-            }
-        })
+        await repository.createSession(refreshToken)
 
         return {
             user, accessToken, refreshToken
@@ -84,39 +65,17 @@ export class AuthService {
         try {
             decoded = jwtVerify(refreshToken) as JwtPayloadType
         } catch (error) {
-            await prisma.sessions.delete({
-                where: {
-                    token: refreshToken
-                }
-            })
+            await repository.deleteSession(refreshToken)
             return {success: false}
         }
 
-        const storedToken = await prisma.sessions.findUnique({
-            where: {
-                token: refreshToken
-            }
-        })
+        const storedToken = await repository.getSession(refreshToken)
 
         if(!storedToken) {
             throw new UnauthorizedError(AUTH_MESSAGES.AUTHORIZE.FAILED)
         }
-        const user = await prisma.user.findUnique({
-            where: {
-                id: decoded.id
-            },
-            include: {
-                role: {
-                    include: {
-                        permissions: {
-                            include: {
-                                permission: true
-                            }
-                        }
-                    }
-                }
-            }
-        })
+        
+        const user = await repository.userExists(decoded.email)
 
         if (!user) {
             throw new UnauthorizedError("User not found")

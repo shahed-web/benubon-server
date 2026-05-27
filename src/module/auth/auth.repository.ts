@@ -6,6 +6,17 @@ export class AuthRepository {
         return await prisma.user.findUnique({
             where: {
                 email
+            },
+            include: {
+                role: {
+                    include: {
+                        permissions: {
+                            include: {
+                                permission: true
+                            }
+                        }
+                    }
+                }
             }
         })
     }
@@ -18,5 +29,29 @@ export class AuthRepository {
                 password: hashedPassword
             }
         })  
+    }
+
+    async createSession(refreshToken: string) {
+        return await prisma.sessions.create({
+            data: {
+                token: refreshToken
+            }
+        })
+    }
+
+    async deleteSession(refreshToken: string) {
+        return await prisma.sessions.delete({
+                where: {
+                    token: refreshToken
+                }
+            })
+    }
+
+    async getSession(refreshToken: string) {
+        return await prisma.sessions.findUnique({
+            where: {
+                token: refreshToken
+            }
+        })
     }
 }
