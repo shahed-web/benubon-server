@@ -1,40 +1,38 @@
 import { BUYER_MESSAGE } from "../../constant/messages";
 import { prisma } from "../../lib/prisma";
 import { AlreadyExistsError } from "../../utils/errors/app-error";
+import { BuyerRepository } from "./buyer.repository";
 import { BuyerInput, UpdateBuyerInput } from "./buyer.validation";
 
 const nullable = <T>(value: T | undefined): T | null => {
   return value ?? null;
 };
 
+const repository = new BuyerRepository();
+
 export class BuyerService {
     async createBuyer(data: BuyerInput) {
-        const buyerExist = await prisma.buyer.findUnique({
-            where: {
-                email: data.email
-            }
-        })
+        const buyerExist = await repository.buyerExists(data.email);
         if(buyerExist) {
             throw new AlreadyExistsError(BUYER_MESSAGE.CREATE.EXISTS)
         }
-        const buyer = await prisma.buyer.create({
-            data: {
-                name: nullable(data.name),
-                email: data.email,
-                country: nullable(data.country),
-                companyName: nullable(data.companyName),
-                phone: nullable(data.phone),
+        const buyerData = {
+            name: nullable(data.name),
+            email: data.email,
+            country: nullable(data.country),
+            companyName: nullable(data.companyName),
+            phone: nullable(data.phone),
 
-                status: data.status,
-                type: data.type,
+            status: data.status,
+            type: data.type,
 
-                lastContactAt: data.lastContact
-                ? new Date(data.lastContact)
-                : null,
+            lastContactAt: data.lastContact
+            ? new Date(data.lastContact)
+            : null,
 
-                notes: nullable(data.notes),
-            },
-        });
+            notes: nullable(data.notes),
+        }
+        const buyer = await repository.createBuyer(buyerData);
 
         return buyer
     }
