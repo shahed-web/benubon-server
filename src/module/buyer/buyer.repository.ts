@@ -1,6 +1,5 @@
-import { BuyerCreateInput } from "../../generated/prisma/models";
+import { BuyerCreateInput, BuyerUpdateInput } from "../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
-import { BuyerInput } from "./buyer.validation";
 
 export class BuyerRepository {
     async buyerExists(email: string) {
@@ -15,5 +14,62 @@ export class BuyerRepository {
         return await prisma.buyer.create({
             data: data,
         });
+    }
+
+    async getBuyers() {
+        return await prisma.buyer.findMany({
+            where: {
+                deletedAt: null,
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+    }
+
+    async getBuyerById(id: string) {
+        return await prisma.buyer.findFirst({
+            where: {
+                id,
+                deletedAt: null,
+            },
+        });
+    }
+
+    async updateBuyer(id: string, data: BuyerUpdateInput) {
+        return await prisma.buyer.update({
+            where: { id },
+            data: data,
+        });
+    }
+
+    async softDeleteBuyer(id: string) {
+        return await prisma.buyer.update({
+            where: {
+                id,
+            },
+            data: {
+                deletedAt: new Date(),
+            },
+        });
+    }
+
+    async retriveDeletedBuyer(id: string) {
+        await prisma.buyer.findFirst({
+            where: {
+                id,
+                deletedAt: {
+                    not: null
+                }
+            }
+        });
+    }
+
+    async permanentDelete(id: string) {
+        await prisma.buyer.delete({
+            where: {
+                id,
+            }
+        })
     }
 }

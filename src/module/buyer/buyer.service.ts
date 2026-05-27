@@ -38,107 +38,70 @@ export class BuyerService {
     }
 
     async getBuyers() {
-        const buyers = await prisma.buyer.findMany({
-        where: {
-            deletedAt: null,
-        },
-        orderBy: {
-            createdAt: "desc",
-        },
-        });
-
+        const buyers = await repository.getBuyers();
         return buyers;
     }
 
     async getBuyerById(id: string) {
-        const buyer = await prisma.buyer.findFirst({
-        where: {
-            id,
-            deletedAt: null,
-        },
-        });
-
+        const buyer = await repository.getBuyerById(id);
         return buyer;
     }   
 
     async updateBuyer(id: string, data: UpdateBuyerInput) {
-         const buyer = await prisma.buyer.update({
-        where: { id },
+        const buyerData = {
+            ...(data.name !== undefined && {
+                name: data.name,
+            }),
 
-        data: {
-        ...(data.name !== undefined && {
-            name: data.name,
-        }),
+            ...(data.email !== undefined && {
+                email: data.email,
+            }),
 
-        ...(data.email !== undefined && {
-            email: data.email,
-        }),
+            ...(data.country !== undefined && {
+                country: data.country,
+            }),
 
-        ...(data.country !== undefined && {
-            country: data.country,
-        }),
+            ...(data.companyName !== undefined && {
+                companyName: data.companyName,
+            }),
 
-        ...(data.companyName !== undefined && {
-            companyName: data.companyName,
-        }),
+            ...(data.phone !== undefined && {
+                phone: data.phone,
+            }),
 
-        ...(data.phone !== undefined && {
-            phone: data.phone,
-        }),
+            ...(data.status !== undefined && {
+                status: data.status,
+            }),
 
-        ...(data.status !== undefined && {
-            status: data.status,
-        }),
+            ...(data.type !== undefined && {
+                type: data.type,
+            }),
 
-        ...(data.type !== undefined && {
-            type: data.type,
-        }),
+            ...(data.notes !== undefined && {
+                notes: data.notes,
+            }),
 
-        ...(data.notes !== undefined && {
-            notes: data.notes,
-        }),
-
-        ...(data.lastContact !== undefined && {
-            lastContactAt: data.lastContact
-            ? new Date(data.lastContact)
-            : null,
-        }),
-        },
-    });
-
-    return buyer;
+            ...(data.lastContact !== undefined && {
+                lastContactAt: data.lastContact
+                ? new Date(data.lastContact)
+                : null,
+            }),
+        }
+        const buyer = await repository.updateBuyer(id, buyerData);
+        return buyer;
     }
 
     async deleteBuyer(id: string) {
-        const buyer = await prisma.buyer.update({
-            where: {
-                id,
-            },
-            data: {
-                deletedAt: new Date(),
-            },
-        });
-
+        const buyer = repository.softDeleteBuyer(id);
         return buyer;
     }
 
     async retriveDeletedBuyer(id: string) {
-        const buyer = await prisma.buyer.findFirst({
-            where: {
-                id,
-                deletedAt: {
-                    not: null
-                }
-            }
-        });
+        const buyer = repository.retriveDeletedBuyer(id);
 
         return buyer;
     }
     async permanentDelete(id: string) {
-        await prisma.buyer.delete({
-            where: {
-                id,
-            }
-        })
+        await repository.permanentDelete(id);
     }
 }
