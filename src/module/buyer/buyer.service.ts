@@ -1,5 +1,4 @@
 import { BUYER_MESSAGE } from "../../constant/messages";
-import { prisma } from "../../lib/prisma";
 import { AlreadyExistsError } from "../../utils/errors/app-error";
 import { BuyerRepository } from "./buyer.repository";
 import { BuyerInput, UpdateBuyerInput } from "./buyer.validation";

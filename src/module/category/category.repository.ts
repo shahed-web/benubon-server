@@ -54,7 +54,8 @@ export class CategoryRepository {
                 id: id
             },
             data: {
-                isActive: false   
+                isActive: false,
+                deletedAt: new Date(),
             }
         })
     }

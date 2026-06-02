@@ -1,6 +1,5 @@
 import _ from "lodash"
 import { AUTH_MESSAGES } from "../../constant/messages";
-import { prisma } from "../../lib/prisma";
 import { hashPassword, validatePassword } from "../../provider/bcrypt.provider";
 import { generateJWT, jwtVerify } from "../../provider/jwt.provider";
 import { AlreadyExistsError, NotFoundError, UnauthorizedError } from "../../utils/errors/app-error";

@@ -1,5 +1,4 @@
 import { CATEGORY_MESSAGES, SLUG_MESSAGES } from "../../constant/messages";
-import { prisma } from "../../lib/prisma";
 import { AlreadyExistsError, NotFoundError } from "../../utils/errors/app-error";
 import { CategoryRepository } from "./category.repository";
 import type { CategoryInput } from "./category.validation";
