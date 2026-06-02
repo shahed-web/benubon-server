@@ -1,15 +1,30 @@
-import { prisma } from "../../lib/prisma";
+import { PermissionRepository } from "./permission.repository";
 import type { PermissionInput } from "./permission.validations";
 
+const repository = new PermissionRepository()
 export class PermissionService {
     async createPermission (data: PermissionInput) {
-        return await prisma.permission.create({
-            data
-        })
+       return await repository.createPermission(data)
+    }
+
+    async updatePermission (id: string, data: PermissionInput) {
+        const permissionData = {
+            name: data.name,
+            description: data.description
+        }
+        return await repository.updatePermission(id, permissionData)
     }
 
     async getAllPermissions () {
-        const permission = await prisma.permission.findMany()
-        return permission
+        return await repository.getAllPermissions()
     }
+
+    async getPermissionById (id: string) {
+        return await repository.getPermissionById(id)
+    }
+
+    async deletePermission (id: string) {
+        await repository.deletePermission(id)
+    }
+
 }

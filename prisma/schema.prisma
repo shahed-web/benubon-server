@@ -50,6 +50,7 @@ model Category {
   products  Product[]
   createdAt DateTime  @default(now()) @db.Timestamp(3)
   updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 }
 
 model Product {
@@ -71,6 +72,7 @@ model Product {
   status      ProductStatus    @default(DRAFT)
   createdAt   DateTime         @default(now()) @db.Timestamp(3)
   updatedAt   DateTime         @updatedAt
+  deletedAt   DateTime?
 }
 
 model ProductVariant {
@@ -141,6 +143,7 @@ model Artisan {
   monthlyCapacity  Int?
   reliabilityScore Int?
   notes            String?
+  isActive         Boolean  @default(true)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -156,6 +159,7 @@ model Buyer {
   country     String?
   companyName String?
   phone       String?
+  isActive    Boolean @default(true)
 
   type   BuyerType?
   status BuyerStatus @default(lead)
@@ -207,8 +211,8 @@ model User {
   roleId String?
   role   Role?   @relation(fields: [roleId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 }
 
@@ -216,13 +220,15 @@ model Role {
   id          String  @id @default(uuid())
   name        String  @unique
   description String?
+  isActive    Boolean @default(true)
 
   users User[]
 
   permissions RolePermission[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 }
 
 model Permission {
@@ -232,8 +238,9 @@ model Permission {
 
   roles RolePermission[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 }
 
 model RolePermission {
