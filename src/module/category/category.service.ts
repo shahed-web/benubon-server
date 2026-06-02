@@ -1,32 +1,24 @@
 import { CATEGORY_MESSAGES, SLUG_MESSAGES } from "../../constant/messages";
 import { prisma } from "../../lib/prisma";
 import { AlreadyExistsError, NotFoundError } from "../../utils/errors/app-error";
+import { CategoryRepository } from "./category.repository";
 import type { CategoryInput } from "./category.validation";
 
+const repository = new CategoryRepository();
 export class CategoryService {
     async createCategory(data: CategoryInput) {
         const slug = data.name.toLowerCase().replace(/\s+/g, '-');
-        const slugExists = await prisma.category.findUnique({
-            where: {
-                slug: slug
-            }
-        })
+        const slugExists = await repository.categorySlug(slug);
         if (slugExists) {
             throw new AlreadyExistsError(SLUG_MESSAGES.CREATE.EXISTS)
         }
         if(data.parentSlug) {
-            const parentCategory = await prisma.category.findUnique({
-                where: {
-                    slug: data.parentSlug
-                }
-            })
+            const parentCategory = await repository.categorySlug(data.parentSlug)
 
             if(!parentCategory) {
                 throw new NotFoundError(CATEGORY_MESSAGES.PARENT_CATEGORY_NOT_EXISTS)
             }
-
-            const childCategory = await prisma.category.create({
-                data: {
+            const categoryData = {
                     name: data.name.toLowerCase(),
                     slug: slug,
                     parent: {
@@ -35,65 +27,40 @@ export class CategoryService {
                         }
                     }
                 }
-            })
+            const childCategory = await repository.createCategory(categoryData)
 
             return childCategory
         }
-
-        const category = await prisma.category.create({
-            data: {
-                name: data.name.toLowerCase(),
-                slug: slug
-            }
-        })
+        const categoryData = {
+            name: data.name.toLowerCase(),
+            slug: slug
+        }
+        const category = await repository.createCategory(categoryData)
 
         return category
     }
 
     async getCategories() {
-        const categories = await prisma.category.findMany({
-            where: {parentId: null},
-            include: {
-                children: {
-                    include: {
-                        children: true
-                    }
-                }
-            }
-        })
-
+        const categories = await repository.getCategories()
         return categories
     }
 
     async updateCategory(data: CategoryInput, id: number) {
         const slug = data.name.toLowerCase().replace(/\s+/g, '-');
-        const slugExists = await prisma.category.findUnique({
-            where: {
-                slug: slug
-            }
-        })
+        const slugExists = await repository.categorySlug(slug);
 
         if (slugExists) {
             throw new AlreadyExistsError(SLUG_MESSAGES.CREATE.EXISTS)
         }
 
-
         if(data.parentSlug) {
-            const parentCategory = await prisma.category.findUnique({
-                where: {
-                    slug: data.parentSlug
-                }
-            })
+            const parentCategory = await repository.categorySlug(data.parentSlug)
 
             if(!parentCategory) {
                 throw new NotFoundError(CATEGORY_MESSAGES.PARENT_CATEGORY_NOT_EXISTS)
             }
 
-            const updatedChildCategory = await prisma.category.update({
-                where: {
-                    id: id
-                },
-                data: {
+            const updateChildCategoryData = {
                     name: data.name.toLowerCase(),
                     slug: slug,
                     parent: {
@@ -102,62 +69,34 @@ export class CategoryService {
                         }
                     }
                 }
-            })
+
+            const updatedChildCategory = await repository.updateCategory(id, updateChildCategoryData)
 
             return updatedChildCategory
         }
 
-        const updatedCategory = await prisma.category.update({
-            where: {
-                id: id
-            },
-            data: {
-                name: data.name,
-                slug: slug,
-                parentId: null
-            }
-        })
+        const updateCategoryData = {
+            name: data.name.toLowerCase(),
+            slug: slug,
+            parentId: null
+        }
+        const updatedCategory = await repository.updateCategory(id, updateCategoryData)
         return updatedCategory
     }
 
     async deleteCategory(id:number) {
-        await prisma.category.delete({
-            where: {
-                id: id
-            }
-        })
-        return
+        await repository.deleteCategory(id)
     }
 
     async softDeleteCategory(id:number) {
-        await prisma.category.update({
-            where: {
-                id: id
-            },
-            data: {
-                isActive: false   
-            }
-        })
+        await repository.softDeleteCategory(id)
     }
 
     async retriveCategory(id:number) {
-        await prisma.category.update({
-            where: {
-                id: id
-            },
-            data: {
-                isActive: true   
-            }
-        })
+        return await repository.retriveCategory(id)
     }
 
     async viewCategory(id:number) {
-        const category = await prisma.category.findUnique({
-            where: {
-                id: id
-            }
-        })
-        
-        return category
+        return await repository.viewCategory(id)
     }
 }
