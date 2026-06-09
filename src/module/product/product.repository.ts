@@ -42,7 +42,8 @@ export class ProductRepository {
                 id: id
             },
             data: {
-                isActive: true
+                isActive: true,
+                deletedAt: null
             }
         })
     }

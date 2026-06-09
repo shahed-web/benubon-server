@@ -50,4 +50,31 @@ export class ProductController {
             next(error)
         }
     }
+
+    async softDelete(req: Request<ProductParams>, res: Response, next: NextFunction) {
+        try {
+            const  id  = Number(req.params.productId)
+            await productService.softDeleteProduct(id)
+            res.status(200).json({
+                success: true,
+                message: PRODUCT_MESSAGES.DELETE.SUCCESS
+            })        
+        }catch (error) {
+            next(error)
+        }
+    }
+
+    async retrieveProduct(req: Request<ProductParams>, res: Response, next: NextFunction) {
+        try {
+            const  id  = Number(req.params.productId)
+            const product = await productService.retrieveProduct(id) 
+            res.status(200).json({
+                success: true,
+                message: PRODUCT_MESSAGES.FETCH.SUCCESS,
+                data: product
+            })        
+        }catch (error) {
+            next(error)
+        }
+    }
 }
