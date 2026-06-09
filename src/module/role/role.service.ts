@@ -1,26 +1,18 @@
-import { prisma } from "../../lib/prisma";
+import { RoleRepository } from "./role.repository";
 import type { RoleInput } from "./role.validations";
 
+const repository = new RoleRepository()
 export class RoleService {
     async getRoles() {
-        const roles = await prisma.role.findMany()
-        return roles
+        return await repository.getRoles()
     }
 
     async createRole (data: RoleInput) {
-        const role = await prisma.role.create({
-            data
-        })
-        return role
+        return await repository.createRole(data)
     }
 
     async getRoleById (id: string) {
-        const role = await prisma.role.findUnique({
-            where: {
-                id
-            }
-        })
-        return role
+        return await repository.getRoleById(id)
     }
 
     async assignPermission (roleId: string, permissionIds: string[]) {
@@ -28,41 +20,19 @@ export class RoleService {
             roleId,
             permissionId,
         }))
-
-        await prisma.rolePermission.createMany({
-            data,
-            skipDuplicates: true
-        })
-
+        await repository.assignPermission(data)
         return true
     }
 
     async updateRole (id: string, data: RoleInput) {
-        const role = await prisma.role.update({
-            where: {
-                id
-            },
-            data
-        })
-        return role
+        return await repository.updateRole(id, data)
     }
 
     async softDelete (id: string) {
-        await prisma.role.update({
-            where: {
-                id
-            },
-            data: {
-                deletedAt: new Date()
-            }
-        })
+        await repository.softDeleteRole(id)
     }   
 
     async permanentDelete (id: string) {
-        await prisma.role.delete({
-            where: {
-                id
-            }
-        })
+        await repository.permanentDeleteRole(id)
     }
 }

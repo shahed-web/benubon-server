@@ -68,9 +68,24 @@ export const AUTH_MESSAGES = {
         EXPIRED: "Token expired",
         FORBIDDEN: "Forbidden",
         INVALID_TOKEN: "Invalid token"
-    },
+    }
 }
 
+export const USER_MESSAGES = {
+    CREATE : {
+        SUCCESS: "User created",
+        FAILED: "User creation failed",
+        EXISTS: "User exists"
+    },
+    UPDATE : {
+        SUCCESS: "User updated",
+        FAILED: "User update failed"
+    },
+    DELETE : {
+        SUCCESS: "User deleted",
+        FAILED: "User delete failed"
+    }
+}
 export const PERMISSION_MESSAGES = {
     CREATE : {
         SUCCESS: "Permission created",

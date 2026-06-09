@@ -82,7 +82,7 @@ export class RoleController {
     async deleteRole (req: Request, res: Response, next: NextFunction) {
         try{
             const id = String(req.params.id)
-            await roleService.deleteRole(id)
+            await roleService.permanentDelete(id)
             res.status(200).json({
                 success: true,
                 message: ROLE_MESSAGES.DELETE.SUCCESS,
