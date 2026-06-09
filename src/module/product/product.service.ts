@@ -7,12 +7,12 @@ export class ProductService {
         return await repository.createProduct(data)
     }
 
-    async getAllProducts() {
-        return repository.getProducts()
+    async getProducts(page: number, limit: number) {
+        return await repository.getProducts(page, limit)
     }
 
     async getProductById(id: number) {
-        return repository.getProductById(id)
+        return await repository.getProductById(id)
     }
     
     async softDeleteProduct(id: number) {

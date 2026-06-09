@@ -8,9 +8,13 @@ export class ProductRepository {
         })
     }
 
-    async getProducts() {
-        return await prisma.product.findMany()
-    }
+    async getProducts(page=1, limit=10) {
+        const skip = (page - 1) * limit
+        return await prisma.product.findMany({
+            skip: skip,
+            take: limit
+        })
+    } 
 
     async getProductById(id: number) {
         return await prisma.product.findUnique({
