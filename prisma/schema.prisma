@@ -121,18 +121,14 @@ model Inventory {
 }
 
 model ProductImage {
-  id        Int     @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
   productId Int
-  publicId  String  @unique
-  url       String
-  width     Int?
-  height    Int?
-  altText   String?
-  position  Int?
+  mediaId   String
 
-  product   Product  @relation(fields: [productId], references: [id])
-  createdAt DateTime @default(now()) @db.Timestamp(3)
-  updatedAt DateTime @updatedAt
+  product Product @relation(fields: [productId], references: [id])
+  media   Media   @relation(fields: [mediaId], references: [id])
+
+  @@unique([productId, mediaId])
 }
 
 model Artisan {
@@ -257,4 +253,18 @@ model Sessions {
   id        String   @id @default(uuid())
   token     String   @unique @db.VarChar(500)
   createdAt DateTime @default(now()) @db.Timestamp(0)
+}
+
+model Media {
+  id         String   @id @default(cuid())
+  fileName   String
+  objectKey  String   @unique
+  mimeType   String
+  size       Int?
+  url        String
+  uploadedAt DateTime @default(now())
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  productImages ProductImage[]
 }
