@@ -1,5 +1,6 @@
 import { ProductCreateInput } from "../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
+import { OrderBy } from "./product.types";
 
 export class ProductRepository {
     async createProduct(data: ProductCreateInput) {
@@ -8,12 +9,49 @@ export class ProductRepository {
         })
     }
 
-    async getProducts(page=1, limit=10) {
-        const skip = (page - 1) * limit
-        return await prisma.product.findMany({
-            skip: skip,
-            take: limit
-        })
+    async getProducts(skip: number, limit=10, orderBy?: OrderBy) {
+        const [products, total] = await prisma.$transaction([
+            prisma.product.findMany({
+                skip: skip,
+                take: limit,
+                orderBy: orderBy!,
+                include: {
+                    variants: {
+                        select: {
+                            id: true,
+                            name: true,
+                            material: true,
+                            size: true,
+                            color: true,
+                            weightKg: true,
+                            lengthCm: true,
+                            widthCm: true,
+                            heightCm: true,
+                            prices: {
+                                select: {
+                                    id: true,
+                                    currency: true,
+                                    amount: true,
+                                    minQty: true,
+                                }
+                            },
+                            inventory: {
+                                select: {
+                                    id: true,
+                                    quantity: true,
+                                    warehouse: true,
+                                }
+                            }
+                        }
+                    }
+                },
+            }),
+            prisma.product.count()
+        ])
+        return {
+            products,
+            total,
+        }
     } 
 
     async getProductById(id: number) {
@@ -31,7 +69,7 @@ export class ProductRepository {
             },
             data: {
                 isActive: false,
-                deletedAt: new Date()
+                // deletedAt: new Date()
             }
         })
     }
@@ -43,7 +81,7 @@ export class ProductRepository {
             },
             data: {
                 isActive: true,
-                deletedAt: null
+                // deletedAt: null
             }
         })
     }

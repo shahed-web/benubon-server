@@ -7,8 +7,24 @@ export class ProductService {
         return await repository.createProduct(data)
     }
 
-    async getProducts(page: number, limit: number) {
-        return await repository.getProducts(page, limit)
+    async getProducts(page: number = 1, limit: number = 10) {
+        const skip = (page - 1) * limit
+        const orderBy = {
+            createdAt: 'desc' as const
+        }
+        const {products, total} = await repository.getProducts(skip, limit, orderBy)
+
+        return {
+            products,
+            meta: {
+                total,
+                totalPages: Math.ceil(total / limit),
+                currentPage: page,
+                limit: limit,
+                hasNextPage: page * limit < total,
+                hasPreviousPage: page > 1
+            }
+        }
     }
 
     async getProductById(id: number) {

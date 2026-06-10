@@ -1,3 +1,4 @@
+import { SortOrder } from "../../generated/prisma/internal/prismaNamespace";
 import type { Category } from "../category/category.types";
 
 interface Product {
@@ -86,4 +87,10 @@ export interface ProductInputRequest {
     categories: number[];
     variants?: ProductVariant[];
     images?: ProductImages[];
+}
+
+export interface OrderBy {
+    createdAt: SortOrder;
+    sortBy?: 'createdAt' | 'name';
+    filterBy?: 'name' | 'sku';
 }
