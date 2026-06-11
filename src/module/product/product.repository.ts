@@ -68,8 +68,7 @@ export class ProductRepository {
                 id: id
             },
             data: {
-                isActive: false,
-                // deletedAt: new Date()
+                isSoftDelete: true
             }
         })
     }
@@ -80,8 +79,7 @@ export class ProductRepository {
                 id: id
             },
             data: {
-                isActive: true,
-                // deletedAt: null
+                isSoftDelete: false
             }
         })
     }

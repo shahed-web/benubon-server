@@ -162,3 +162,10 @@ export const ARTISAN_MESSAGE = {
         FAILED: "Artisan delete failed"
     }
 }
+
+export const MEDIA_MESSAGE = {
+    UPLOAD: {
+        SUCCESS: "Image upload successful",
+        FAILED: "Image upload failed"
+    }
+}

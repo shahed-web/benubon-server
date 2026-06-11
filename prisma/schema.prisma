@@ -28,6 +28,7 @@ enum BuyerType {
 
 enum ProductStatus {
   ACTIVE
+  ARCHIVED
   DRAFT
 }
 
@@ -54,25 +55,23 @@ model Category {
 }
 
 model Product {
-  id          Int              @id @default(autoincrement())
-  sku         String           @unique
-  name        String
-  slug        String           @unique
-  description String
-  isActive    Boolean          @default(true)
-  imagesReady Boolean          @default(false)
-  hsCode      String?
-  moq         String?
-  categories  Category[]
-  variants    ProductVariant[]
-  images      ProductImage[]
-  artisanId   Int?
-  artisan     Artisan?         @relation(fields: [artisanId], references: [id])
-  inquiries   Inquiry[]
-  status      ProductStatus    @default(DRAFT)
-  createdAt   DateTime         @default(now()) @db.Timestamp(3)
-  updatedAt   DateTime         @updatedAt
-  deletedAt   DateTime?
+  id           Int              @id @default(autoincrement())
+  sku          String           @unique
+  name         String
+  slug         String           @unique
+  description  String
+  isSoftDelete Boolean          @default(true)
+  hsCode       String?
+  moq          String?
+  categories   Category[]
+  variants     ProductVariant[]
+  images       ProductImage[]
+  artisanId    Int?
+  artisan      Artisan?         @relation(fields: [artisanId], references: [id])
+  inquiries    Inquiry[]
+  status       ProductStatus    @default(DRAFT)
+  createdAt    DateTime         @default(now()) @db.Timestamp(3)
+  updatedAt    DateTime         @updatedAt
 }
 
 model ProductVariant {
@@ -256,14 +255,11 @@ model Sessions {
 }
 
 model Media {
-  id         String   @id @default(cuid())
-  fileName   String
-  objectKey  String   @unique
-  mimeType   String
-  size       Int?
-  url        String
-  uploadedAt DateTime @default(now())
-
+  id            String         @id @default(cuid())
+  fileName      String
+  objectKey     String         @unique
+  mimeType      String
+  size          Int?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   productImages ProductImage[]
