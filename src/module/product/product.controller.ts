@@ -77,4 +77,18 @@ export class ProductController {
             next(error)
         }
     }
+
+    async deleteProduct(req: Request<ProductParams>, res: Response, next: NextFunction) {
+        try{
+            const  id  = Number(req.params.productId)
+            await productService.deleteProduct(id)
+            res.status(200).json({
+                success: true,
+                message: PRODUCT_MESSAGES.DELETE.SUCCESS
+            })
+        }catch(error) {
+            next(error)
+        }
+
+    }
 }

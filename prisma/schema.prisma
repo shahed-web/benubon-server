@@ -89,7 +89,7 @@ model ProductVariant {
   widthCm  Float?
   heightCm Float?
 
-  product   Product    @relation(fields: [productId], references: [id])
+  product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
   prices    Price[]
   inventory Inventory?
 
@@ -103,7 +103,7 @@ model Price {
   currency  String
   amount    Float
   minQty    Int
-  variant   ProductVariant @relation(fields: [variantId], references: [id])
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
   createdAt DateTime       @default(now()) @db.Timestamp(3)
   updatedAt DateTime       @updatedAt
 
@@ -115,7 +115,7 @@ model Inventory {
   variantId Int            @unique
   quantity  Int
   warehouse String
-  variant   ProductVariant @relation(fields: [variantId], references: [id])
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
   createdAt DateTime       @default(now()) @db.Timestamp(3)
   updatedAt DateTime       @updatedAt
 }
@@ -125,7 +125,7 @@ model ProductImage {
   productId Int
   mediaId   String
 
-  product Product @relation(fields: [productId], references: [id])
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   media   Media   @relation(fields: [mediaId], references: [id])
 
   @@unique([productId, mediaId])
