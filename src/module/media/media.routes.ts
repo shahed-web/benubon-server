@@ -5,7 +5,7 @@ const router = Router()
 
 const controller = new MediaController()
 
-router.post("/upload-image", controller.uploadImage.bind(controller))
+router.post("/upload-intent", controller.uploadIntent.bind(controller))
 router.post("/complete-upload", controller.completeUpload.bind(controller))
 
 export default router;

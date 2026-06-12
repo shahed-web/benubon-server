@@ -6,7 +6,7 @@ import { MEDIA_MESSAGE } from "../../constant/messages";
 
 const mediaService = new MediaService()
 export class MediaController {
-    async uploadImage (req: Request<{}, {}, UploadIntentRequest>, res: Response, next: NextFunction) {
+    async uploadIntent (req: Request<{}, {}, UploadIntentRequest>, res: Response, next: NextFunction) {
         try {
             const result = await mediaService.generateUploadUrls(req.body.id, req.body.entity, req.body.files);
             res.json({
