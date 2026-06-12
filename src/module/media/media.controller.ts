@@ -8,7 +8,7 @@ const mediaService = new MediaService()
 export class MediaController {
     async uploadImage (req: Request<{}, {}, UploadIntentRequest>, res: Response, next: NextFunction) {
         try {
-            const result = await mediaService.generateUploadUrls(req.body.productId, req.body.files)
+            const result = await mediaService.generateUploadUrls(req.body.id, req.body.entity, req.body.files);
             res.json({
                 success: true,
                 data: result

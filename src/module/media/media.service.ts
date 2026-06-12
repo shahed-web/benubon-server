@@ -12,11 +12,11 @@ const repository = new MediaRepository()
 
 export class MediaService {
 
-  async generateUploadUrls( productId: number, files: UploadIntentFile[]) {
+  async generateUploadUrls( id: number, entity: string, files: UploadIntentFile[]) {
     return Promise.all(
       files.map(async file => {
 
-        const objectKey = `products/${productId}/${crypto.randomUUID()}-${file.fileName}`;
+        const objectKey = `${entity}/${id}/${crypto.randomUUID()}-${file.fileName}`;
         
           const command = new PutObjectCommand({
             Bucket:process.env.R2_BUCKET_NAME!,

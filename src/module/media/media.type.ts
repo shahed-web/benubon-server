@@ -7,7 +7,8 @@ export interface UploadIntentFile {
 }
 
 export interface UploadIntentRequest {
-  productId: number;
+  id: number;
+  entity: string;
   files: UploadIntentFile[];
 }
 
