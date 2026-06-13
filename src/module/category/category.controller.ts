@@ -26,17 +26,17 @@ export class CategoryController {
 
     async getAll(req: Request, res: Response<FetchCategoryResponse>, next: NextFunction) {
         try {
-            const categories = await categoryService.getCategories()
+            const { categories, total } = await categoryService.getCategories()
 
             res.status(200).json({
                 success: true,
                 message: CATEGORY_MESSAGES.FETCH.SUCCESS,
-                data: categories
+                data: { categories, meta: { total } }
             })
         } catch (error) {
             next(error)
         }
-    }
+}
 
     async update(req:Request<CategoryParams, {}, CategoryInputRequest>, res:Response<CategoryResponse>, next: NextFunction) {
         try {
@@ -80,10 +80,10 @@ export class CategoryController {
        }
     }
 
-    async retrive(req:Request<CategoryParams>, res:Response, next: NextFunction) {
+    async retrieve(req:Request<CategoryParams>, res:Response, next: NextFunction) {
        try {
             const id = Number(req.params.categoryId)
-            await categoryService.retriveCategory(id)
+            await categoryService.retrieveCategory(id)
             res.status(200).json({
                 success: true,
                 message: CATEGORY_MESSAGES.RETRIEVE.SUCCESS

@@ -16,17 +16,21 @@ export class CategoryRepository {
         })
     }
 
-    async getCategories() {
-        return await prisma.category.findMany({
-            where: {parentId: null},
-            include: {
-                children: {
-                    include: {
-                        children: true
+    async getCategories() { 
+            const [categories, total] = await prisma.$transaction([
+                prisma.category.findMany({
+                where: {parentId: null},
+                include: {
+                    children: {
+                        include: {
+                            children: true
+                        }
                     }
                 }
-            }
-        })
+            }),
+            prisma.category.count()
+        ])
+        return {categories, total}
     }
     async updateCategory(id:number, data: CategoryCreateInput) {
         return await prisma.category.update({
@@ -54,7 +58,7 @@ export class CategoryRepository {
                 id: id
             },
             data: {
-                isActive: false,
+                isSoftDelete: false,
                 deletedAt: new Date(),
             }
         })
@@ -66,7 +70,7 @@ export class CategoryRepository {
                 id: id
             },
             data: {
-                isActive: true   
+                isSoftDelete: true   
             }
         })
     }

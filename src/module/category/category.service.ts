@@ -20,6 +20,7 @@ export class CategoryService {
             const categoryData = {
                     name: data.name.toLowerCase(),
                     slug: slug,
+                    description: data.description ? data.description : null,
                     parent: {
                         connect: {
                             slug: data.parentSlug
@@ -32,7 +33,8 @@ export class CategoryService {
         }
         const categoryData = {
             name: data.name.toLowerCase(),
-            slug: slug
+            slug: slug,
+            description: data.description ? data.description : null
         }
         const category = await repository.createCategory(categoryData)
 
@@ -40,8 +42,8 @@ export class CategoryService {
     }
 
     async getCategories() {
-        const categories = await repository.getCategories()
-        return categories
+        const { categories, total } = await repository.getCategories()
+        return { categories, total }
     }
 
     async updateCategory(data: CategoryInput, id: number) {
@@ -91,7 +93,7 @@ export class CategoryService {
         await repository.softDeleteCategory(id)
     }
 
-    async retriveCategory(id:number) {
+    async retrieveCategory(id:number) {
         return await repository.retriveCategory(id)
     }
 

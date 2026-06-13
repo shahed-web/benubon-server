@@ -27,7 +27,12 @@ export interface CategoryResponse {
 export interface FetchCategoryResponse {
     success: boolean;
     message: string;
-    data?: Category[]
+    data?: {
+        categories: Category[];
+        meta: {
+            total: number;
+        }
+    }
 }
 
 export interface CategoryParams {

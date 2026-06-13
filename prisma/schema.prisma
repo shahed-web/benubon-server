@@ -32,6 +32,12 @@ enum ProductStatus {
   DRAFT
 }
 
+enum CategoryStatus {
+  ACTIVE
+  ARCHIVED
+  DRAFT
+}
+
 enum InquiryStatus {
   new
   replied
@@ -39,14 +45,16 @@ enum InquiryStatus {
 }
 
 model Category {
-  id       Int        @id @default(autoincrement())
-  name     String
-  slug     String     @unique
-  imgUrl   String?
-  isActive Boolean    @default(true)
-  parentId Int?
-  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
-  children Category[] @relation("CategoryTree")
+  id           Int            @id @default(autoincrement())
+  name         String
+  slug         String         @unique
+  description  String?
+  imgUrl       String?
+  isSoftDelete Boolean        @default(true)
+  status       CategoryStatus @default(DRAFT)
+  parentId     Int?
+  parent       Category?      @relation("CategoryTree", fields: [parentId], references: [id])
+  children     Category[]     @relation("CategoryTree")
 
   products  Product[]
   createdAt DateTime  @default(now()) @db.Timestamp(3)
@@ -55,23 +63,24 @@ model Category {
 }
 
 model Product {
-  id           Int              @id @default(autoincrement())
-  sku          String           @unique
-  name         String
-  slug         String           @unique
-  description  String
-  isSoftDelete Boolean          @default(true)
-  hsCode       String?
-  moq          String?
-  categories   Category[]
-  variants     ProductVariant[]
-  images       ProductImage[]
-  artisanId    Int?
-  artisan      Artisan?         @relation(fields: [artisanId], references: [id])
-  inquiries    Inquiry[]
-  status       ProductStatus    @default(DRAFT)
-  createdAt    DateTime         @default(now()) @db.Timestamp(3)
-  updatedAt    DateTime         @updatedAt
+  id              Int              @id @default(autoincrement())
+  sku             String           @unique
+  name            String
+  slug            String           @unique
+  description     String
+  isSoftDelete    Boolean          @default(true)
+  isInternational Boolean          @default(true)
+  hsCode          String?
+  moq             String?
+  categories      Category[]
+  variants        ProductVariant[]
+  images          ProductImage[]
+  artisanId       Int?
+  artisan         Artisan?         @relation(fields: [artisanId], references: [id])
+  inquiries       Inquiry[]
+  status          ProductStatus    @default(DRAFT)
+  createdAt       DateTime         @default(now()) @db.Timestamp(3)
+  updatedAt       DateTime         @updatedAt
 }
 
 model ProductVariant {

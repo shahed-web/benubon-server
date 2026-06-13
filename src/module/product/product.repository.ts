@@ -58,7 +58,43 @@ export class ProductRepository {
         return await prisma.product.findUnique({
             where: {
                 id: id
-            }
+            },
+            include: {
+                    categories: {
+                        select: {
+                            id: true,
+                            name: true,
+                        }
+                    },
+                    variants: {
+                        select: {
+                            id: true,
+                            name: true,
+                            material: true,
+                            size: true,
+                            color: true,
+                            weightKg: true,
+                            lengthCm: true,
+                            widthCm: true,
+                            heightCm: true,
+                            prices: {
+                                select: {
+                                    id: true,
+                                    currency: true,
+                                    amount: true,
+                                    minQty: true,
+                                }
+                            },
+                            inventory: {
+                                select: {
+                                    id: true,
+                                    quantity: true,
+                                    warehouse: true,
+                                }
+                            }
+                        }
+                    }
+                },
         })
     }
 
