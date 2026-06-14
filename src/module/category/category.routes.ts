@@ -8,6 +8,7 @@ const middleware = new AuthMiddleware()
 
 router.get("/view/:categoryId", controller.view.bind(controller))
 router.get("/categories",  controller.getAll.bind(controller))
+router.get("/category-options",  controller.categoryOptions.bind(controller))
 // router.get("/categories", [middleware.authenticateToken], controller.getAll.bind(controller))
 
 router.post("/create", controller.create.bind(controller))

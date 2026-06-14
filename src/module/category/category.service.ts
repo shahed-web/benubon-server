@@ -41,9 +41,23 @@ export class CategoryService {
         return category
     }
 
-    async getCategories() {
-        const { categories, total } = await repository.getCategories()
-        return { categories, total }
+    async getCategories(page=1, limit=10) {
+        const skip = (page - 1) * limit
+        const orderBy = {
+            createdAt: 'desc' as const
+        }
+        const { categories, total } = await repository.getCategories(skip, limit, orderBy)
+        return { 
+            categories,
+            meta: {
+                total,
+                totalPages: Math.ceil(total / limit),
+                currentPage: page,
+                limit: limit,
+                hasNextPage: page * limit < total,
+                hasPreviousPage: page > 1
+            }
+         }
     }
 
     async updateCategory(data: CategoryInput, id: number) {
@@ -99,5 +113,9 @@ export class CategoryService {
 
     async viewCategory(id:number) {
         return await repository.viewCategory(id)
+    }
+
+    async categoryOptions() {
+        return await repository.categoryOptions()
     }
 }

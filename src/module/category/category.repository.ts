@@ -1,5 +1,6 @@
 import { CategoryCreateInput } from "../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
+import { OrderBy } from "./category.types";
 
 export class CategoryRepository {
     async categorySlug(slug: string) {
@@ -16,7 +17,27 @@ export class CategoryRepository {
         })
     }
 
-    async getCategories() { 
+    async getCategories(skip: number, limit: number, orderBy: OrderBy) { 
+            const [categories, total] = await prisma.$transaction([
+                prisma.category.findMany({
+                    skip: skip,
+                    take: limit,
+                    orderBy: orderBy!,
+                    include: {
+                        children: {
+                            include: {
+                                children: true
+                            }
+                        }
+                    }
+                }),
+            prisma.category.count()
+        ])
+        return {categories, total}
+    }
+
+    // folliwng is unused
+    async getParentCategoriesOnly() { 
             const [categories, total] = await prisma.$transaction([
                 prisma.category.findMany({
                 where: {parentId: null},
@@ -79,6 +100,24 @@ export class CategoryRepository {
         return await prisma.category.findUnique({
             where: {
                 id: id
+            },
+            include: {
+                children: {
+                    include: {
+                        children: true
+                    }
+                }
+            }
+        })
+    }
+
+    async categoryOptions() {
+        return await prisma.category.findMany({
+            where: { parentId: null },
+            select: {
+                id: true,
+                name: true,
+                slug: true
             }
         })
     }

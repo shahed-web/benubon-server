@@ -1,3 +1,5 @@
+import { SortOrder } from "../../generated/prisma/internal/prismaNamespace";
+
 export interface Category {
     id: number;
     name: string;
@@ -37,4 +39,10 @@ export interface FetchCategoryResponse {
 
 export interface CategoryParams {
     categoryId: number;
+}
+
+export interface OrderBy {
+    createdAt: SortOrder;
+    sortBy?: 'createdAt' | 'name';
+    filterBy?: 'name' | 'sku';
 }

@@ -26,12 +26,15 @@ export class CategoryController {
 
     async getAll(req: Request, res: Response<FetchCategoryResponse>, next: NextFunction) {
         try {
-            const { categories, total } = await categoryService.getCategories()
+            const page = Number(req.query.page) || 1
+            const limit = Number(req.query.limit) || 10
+
+            const { categories, meta } = await categoryService.getCategories(page, limit)
 
             res.status(200).json({
                 success: true,
                 message: CATEGORY_MESSAGES.FETCH.SUCCESS,
-                data: { categories, meta: { total } }
+                data: { categories, meta }
             })
         } catch (error) {
             next(error)
@@ -100,10 +103,23 @@ export class CategoryController {
             res.status(200).json({
                 success: true,
                 message: CATEGORY_MESSAGES.FETCH.SUCCESS,
-                data: _.pick(category, ["id", "name", "slug"])
+                data: category
             })
        } catch(error) {
             next(error)
        }
+    }
+
+    async categoryOptions(req: Request, res: Response, next: NextFunction) {
+        try {
+            const options = await categoryService.categoryOptions()
+            res.json({
+                success: true,
+                message: CATEGORY_MESSAGES.FETCH.SUCCESS,
+                data: options
+            })
+        }catch(error) {
+            next(error)
+        }
     }
 }

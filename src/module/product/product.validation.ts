@@ -55,7 +55,7 @@ export const productSchema = z.object({
     description: z.string(),
     hsCode: z.string(),
     moq: z.string(),
-    isInternational: z.boolean().optional(),
+    isInternational: z.boolean(),
     status: z.enum(["DRAFT", "ACTIVE"]),
     
     categories: categoriesSchema,
