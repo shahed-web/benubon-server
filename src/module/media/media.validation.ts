@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const completeUploadSchema = z.object({
-  productId: z.number().int().positive(),
+  id: z.number().int().positive(),
 
   files: z.array(
       z.object({

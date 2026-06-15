@@ -4,11 +4,8 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { r2Client } from "../../provider/cloudflare-r2.provider";
-import { CompleteUploadRequest, UploadIntentFile } from "./media.type";
-import { MediaRepository } from "./media.repository";
+import {  UploadIntentFile } from "./media.type";
 
-
-const repository = new MediaRepository()
 
 export class MediaService {
 
@@ -38,9 +35,5 @@ export class MediaService {
         };
       })
     );
-  }
-
-  async completeUpload(payload: CompleteUploadRequest) {
-    return await repository.completeUpload(payload)
   }
 }

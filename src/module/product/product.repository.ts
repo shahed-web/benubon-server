@@ -1,5 +1,6 @@
 import { ProductCreateInput } from "../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
+import { CompleteUploadRequest } from "../media/media.type";
 import { OrderBy } from "./product.types";
 
 export class ProductRepository {
@@ -126,5 +127,66 @@ export class ProductRepository {
                 id: id
             }
         })
+    }
+
+    async completeUpload(payload: CompleteUploadRequest) {
+
+        return prisma.$transaction(
+        async (tx) => {
+
+            const product = await tx.product.findUnique({
+                where: {
+                id: payload.id,
+                },
+                select: {
+                id: true,
+                },
+            });
+
+            if (!product) {
+            throw new Error(
+                "Product not found"
+            );
+            }
+
+            const mediaRecords = [];
+
+            
+            for (const file of payload.files) {
+            const media = await tx.media.create({
+                data: {
+                    fileName: file.fileName,
+                    objectKey: file.objectKey,
+                    mimeType:file.mimeType,
+                    size: file.size ?? null,
+                },
+                });
+
+            mediaRecords.push(media);
+
+            await tx.productImage.create({
+                data: {
+                productId: payload.id,
+                mediaId: media.id,
+                },
+            });
+            }
+
+            await tx.product.update({
+            where: {
+                id: payload.id,
+            },
+            data: {
+                status: "ACTIVE",
+            },
+            });
+
+            return {
+            productId: payload.id,
+            uploadedImages: mediaRecords.length,
+            media: mediaRecords,
+            };
+        }
+        );
     }
 }

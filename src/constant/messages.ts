@@ -20,7 +20,7 @@ export const CATEGORY_MESSAGES = {
         SUCCESS: "Category fetched",
         FAILED: "Category fetch failed",
     },
-    PARENT_CATEGORY_NOT_EXISTS : "Parent category does not exists"
+    CATEGORY_NOT_EXISTS : "Category does not exists"
 }
 
 export const SLUG_MESSAGES = {

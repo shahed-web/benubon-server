@@ -1,5 +1,6 @@
 import { CATEGORY_MESSAGES, SLUG_MESSAGES } from "../../constant/messages";
 import { AlreadyExistsError, NotFoundError } from "../../utils/errors/app-error";
+import { CompleteUploadRequest } from "../media/media.type";
 import { CategoryRepository } from "./category.repository";
 import type { CategoryInput } from "./category.validation";
 
@@ -11,11 +12,11 @@ export class CategoryService {
         if (slugExists) {
             throw new AlreadyExistsError(SLUG_MESSAGES.CREATE.EXISTS)
         }
-        if(data.parentSlug) {
-            const parentCategory = await repository.categorySlug(data.parentSlug)
+        if(data.parentId) {
+            const parentCategory = await repository.viewCategory(data.parentId)
 
             if(!parentCategory) {
-                throw new NotFoundError(CATEGORY_MESSAGES.PARENT_CATEGORY_NOT_EXISTS)
+                throw new NotFoundError(CATEGORY_MESSAGES.CATEGORY_NOT_EXISTS)
             }
             const categoryData = {
                     name: data.name.toLowerCase(),
@@ -23,7 +24,7 @@ export class CategoryService {
                     description: data.description ? data.description : null,
                     parent: {
                         connect: {
-                            slug: data.parentSlug
+                            id: data.parentId
                         }
                     }
                 }
@@ -61,26 +62,37 @@ export class CategoryService {
     }
 
     async updateCategory(data: CategoryInput, id: number) {
-        const slug = data.name.toLowerCase().replace(/\s+/g, '-');
-        const slugExists = await repository.categorySlug(slug);
+        let slug
+        const dataFromDB = await repository.viewCategory(id)
+        if (!dataFromDB) {
+            throw new NotFoundError(CATEGORY_MESSAGES.CATEGORY_NOT_EXISTS)
+        }
+        if(data.name != dataFromDB?.name) {
+            slug = data.name.toLowerCase().replace(/\s+/g, '-');
 
-        if (slugExists) {
-            throw new AlreadyExistsError(SLUG_MESSAGES.CREATE.EXISTS)
+            const slugExists = await repository.categorySlug(slug);
+            
+            if (slugExists) {
+                throw new AlreadyExistsError(SLUG_MESSAGES.CREATE.EXISTS)
+            }
+        } else {
+            slug = dataFromDB.slug
         }
 
-        if(data.parentSlug) {
-            const parentCategory = await repository.categorySlug(data.parentSlug)
+        if(data.parentId) {
+            const parentCategory = await repository.viewCategory(data.parentId)
 
             if(!parentCategory) {
-                throw new NotFoundError(CATEGORY_MESSAGES.PARENT_CATEGORY_NOT_EXISTS)
+                throw new NotFoundError(CATEGORY_MESSAGES.CATEGORY_NOT_EXISTS)
             }
 
             const updateChildCategoryData = {
                     name: data.name.toLowerCase(),
                     slug: slug,
+                    status: data.status ? data.status : dataFromDB.status,
                     parent: {
                         connect: {
-                            slug: data.parentSlug
+                            id: data.parentId
                         }
                     }
                 }
@@ -93,7 +105,7 @@ export class CategoryService {
         const updateCategoryData = {
             name: data.name.toLowerCase(),
             slug: slug,
-            parentId: null
+            description: data.description ? data.description : dataFromDB.description
         }
         const updatedCategory = await repository.updateCategory(id, updateCategoryData)
         return updatedCategory
@@ -115,7 +127,12 @@ export class CategoryService {
         return await repository.viewCategory(id)
     }
 
+    async completeUpload(payload: CompleteUploadRequest) {
+        return await repository.completeUpload(payload)
+    }
+
     async categoryOptions() {
         return await repository.categoryOptions()
     }
+    
 }

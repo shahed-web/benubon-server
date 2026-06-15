@@ -1,5 +1,7 @@
 import { CategoryCreateInput } from "../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
+import { NotFoundError } from "../../utils/errors/app-error";
+import { CompleteUploadRequest } from "../media/media.type";
 import { OrderBy } from "./category.types";
 
 export class CategoryRepository {
@@ -58,10 +60,7 @@ export class CategoryRepository {
             where: {
                 id: id
             },
-            data: {
-                name: data.name,
-                slug: data.slug
-            }
+            data: data
         })
     }
 
@@ -120,5 +119,66 @@ export class CategoryRepository {
                 slug: true
             }
         })
+    }
+
+    async completeUpload(payload: CompleteUploadRequest) {
+
+    return prisma.$transaction(
+        async (tx) => {
+
+        const category = await tx.category.findUnique({
+            where: {
+                id: payload.id,
+            },
+            select: {
+                id: true,
+            },
+            });
+
+        if (!category) {
+            throw new NotFoundError(
+            "Category not found"
+            );
+        }
+
+        const mediaRecords = [];
+
+        
+        for (const file of payload.files) {
+            const media = await tx.media.create({
+                data: {
+                fileName: file.fileName,
+                objectKey: file.objectKey,
+                mimeType:file.mimeType,
+                size: file.size ?? null,
+                },
+            });
+
+            mediaRecords.push(media);
+
+            await tx.categoryImage.create({
+            data: {
+                categoryId: payload.id,
+                mediaId: media.id,
+            },
+            });
+        }
+
+        await tx.category.update({
+            where: {
+            id: payload.id,
+            },
+            data: {
+            status: "ACTIVE",
+            },
+        });
+
+        return {
+            categoryId: payload.id,
+            uploadedImages: mediaRecords.length,
+            media: mediaRecords,
+        };
+        }
+    );
     }
 }

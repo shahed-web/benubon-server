@@ -56,10 +56,22 @@ model Category {
   parent       Category?      @relation("CategoryTree", fields: [parentId], references: [id])
   children     Category[]     @relation("CategoryTree")
 
-  products  Product[]
-  createdAt DateTime  @default(now()) @db.Timestamp(3)
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  products       Product[]
+  createdAt      DateTime        @default(now()) @db.Timestamp(3)
+  updatedAt      DateTime        @updatedAt
+  deletedAt      DateTime?
+  categoryImages CategoryImage[]
+}
+
+model CategoryImage {
+  id         Int    @id @default(autoincrement())
+  categoryId Int
+  mediaId    String
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  media    Media    @relation(fields: [mediaId], references: [id])
+
+  @@unique([categoryId, mediaId])
 }
 
 model Product {
@@ -264,12 +276,13 @@ model Sessions {
 }
 
 model Media {
-  id            String         @id @default(cuid())
-  fileName      String
-  objectKey     String         @unique
-  mimeType      String
-  size          Int?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  productImages ProductImage[]
+  id             String          @id @default(cuid())
+  fileName       String
+  objectKey      String          @unique
+  mimeType       String
+  size           Int?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  productImages  ProductImage[]
+  categoryImages CategoryImage[]
 }

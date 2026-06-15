@@ -1,9 +1,9 @@
 import _ from "lodash";
 import type { NextFunction, Request, Response } from "express";
-import { categorySchema } from "./category.validation";
+import { categorySchema, completeUploadSchema } from "./category.validation";
 import { CategoryService } from "./category.service";
 import type { CategoryParams, CategoryInputRequest, CategoryResponse, FetchCategoryResponse } from "./category.types";
-import { CATEGORY_MESSAGES } from "../../constant/messages";
+import { CATEGORY_MESSAGES, MEDIA_MESSAGE } from "../../constant/messages";
 
 
 const categoryService = new CategoryService()
@@ -43,8 +43,10 @@ export class CategoryController {
 
     async update(req:Request<CategoryParams, {}, CategoryInputRequest>, res:Response<CategoryResponse>, next: NextFunction) {
         try {
+            console.log(req.body)
             const id = Number(req.params.categoryId)
             const parsed = categorySchema.parse(req.body)
+            console.log(parsed)
             const updatedCategory = await categoryService.updateCategory(parsed, id)
 
             res.status(200).json({
@@ -120,6 +122,20 @@ export class CategoryController {
             })
         }catch(error) {
             next(error)
+        }
+    }
+
+    async categoryImageUploadComplete(req: Request, res: Response, next: NextFunction) {
+        try{
+            const parsed = completeUploadSchema.parse(req.body);
+            const result = await categoryService.completeUpload(parsed);
+            res.json({
+                success: true,
+                message: MEDIA_MESSAGE.UPLOAD.SUCCESS,
+                data: result
+            })
+        }catch(error) {
+            next(error);
         }
     }
 }
