@@ -110,6 +110,11 @@ export class CategoryRepository {
                     include: {
                         children: true
                     }
+                },
+                categoryImages: {
+                    include: {
+                        media: true
+                    }
                 }
             }
         })

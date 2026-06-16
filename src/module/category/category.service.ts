@@ -1,10 +1,13 @@
 import { CATEGORY_MESSAGES, SLUG_MESSAGES } from "../../constant/messages";
 import { AlreadyExistsError, NotFoundError } from "../../utils/errors/app-error";
+import { MediaService } from "../media/media.service";
 import { CompleteUploadRequest } from "../media/media.type";
 import { CategoryRepository } from "./category.repository";
 import type { CategoryInput } from "./category.validation";
 
 const repository = new CategoryRepository();
+const mediaService = new MediaService()
+
 export class CategoryService {
     async createCategory(data: CategoryInput) {
         const slug = data.name.toLowerCase().replace(/\s+/g, '-');
@@ -112,6 +115,14 @@ export class CategoryService {
     }
 
     async deleteCategory(id:number) {
+        const getCategoryWithImage = await repository.viewCategory(id)
+        const images = getCategoryWithImage?.categoryImages
+        if(images?.length) {
+            const objectKeys = images.map( image => image.media.objectKey);
+            await mediaService.deleteFiles(objectKeys)
+            await repository.deleteCategory(id)
+        }
+
         await repository.deleteCategory(id)
     }
 
