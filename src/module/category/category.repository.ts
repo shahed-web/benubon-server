@@ -133,62 +133,101 @@ export class CategoryRepository {
 
     async completeUpload(payload: CompleteUploadRequest) {
 
-    return prisma.$transaction(
-        async (tx) => {
+        return prisma.$transaction(
+            async (tx) => {
 
-        const category = await tx.category.findUnique({
-            where: {
-                id: payload.id,
-            },
-            select: {
-                id: true,
-            },
-            });
+            const category = await tx.category.findUnique({
+                where: {
+                    id: payload.id,
+                },
+                select: {
+                    id: true,
+                },
+                });
 
-        if (!category) {
-            throw new NotFoundError(
-            "Category not found"
-            );
-        }
+            if (!category) {
+                throw new NotFoundError(
+                "Category not found"
+                );
+            }
 
-        const mediaRecords = [];
+            const mediaRecords = [];
 
-        
-        for (const file of payload.files) {
-            const media = await tx.media.create({
+            
+            for (const file of payload.files) {
+                const media = await tx.media.create({
+                    data: {
+                        fileName: file.fileName,
+                        objectKey: file.objectKey,
+                        mimeType:file.mimeType,
+                        size: file.size ?? null,
+                    },
+                });
+
+                mediaRecords.push(media);
+
+                await tx.categoryImage.create({
+                    data: {
+                        categoryId: payload.id,
+                        mediaId: media.id,
+                    },
+                });
+            }
+
+            await tx.category.update({
+                where: {
+                    id: payload.id,
+                },
                 data: {
-                    fileName: file.fileName,
-                    objectKey: file.objectKey,
-                    mimeType:file.mimeType,
-                    size: file.size ?? null,
+                    status: "ACTIVE",
                 },
             });
 
-            mediaRecords.push(media);
-
-            await tx.categoryImage.create({
-            data: {
+            return {
                 categoryId: payload.id,
-                mediaId: media.id,
-            },
-            });
-        }
+                uploadedImages: mediaRecords.length,
+                media: mediaRecords,
+            };
+            }
+        );
+    }
 
-        await tx.category.update({
+    async getCategoryImage(id:number) {
+        return await prisma.categoryImage.findFirst({
             where: {
-            id: payload.id,
+                categoryId: id
+            },
+            include: {
+                media: true
+            }
+        })
+    }
+
+    async updateCategoryImageMedia(imageId: number, mediaId:string) {
+        await prisma.categoryImage.update({
+            where: {
+                id: imageId
             },
             data: {
-            status: "ACTIVE",
-            },
-        });
+                mediaId
+            }
+        })
+    }
+    
+    async createCategoryImageMedia(categoryId:number, mediaId: string) {
+        await prisma.categoryImage.create({
+            data: {
+                categoryId,
+                mediaId
+            }
+        })
+    }
 
-        return {
-            categoryId: payload.id,
-            uploadedImages: mediaRecords.length,
-            media: mediaRecords,
-        };
-        }
-    );
+    async deleteCategoryImage(categoryImageId: number) {
+        await prisma.categoryImage.delete({
+            where: {
+                id: categoryImageId
+            }
+        })
     }
 }

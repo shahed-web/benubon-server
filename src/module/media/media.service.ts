@@ -4,9 +4,10 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { deleteMediaObject, r2Client } from "../../provider/cloudflare-r2.provider";
-import {  UploadIntentFile } from "./media.type";
+import {  CompleteUploadFile, UploadIntentFile } from "./media.type";
+import { MediaRepository } from "./media.repository";
 
-
+const repository = new MediaRepository()
 export class MediaService {
 
   async generateUploadUrls( id: number, entity: string, files: UploadIntentFile[]) {
@@ -37,11 +38,23 @@ export class MediaService {
     );
   }
 
+  async createMedia(data: CompleteUploadFile) {
+    return await repository.createMedia(data)
+  }
+
   async deleteFiles( objectKeys: string[]) {
     await Promise.all(
       objectKeys.map(key =>
         deleteMediaObject(key)
       )
     );
-}
+  }
+
+  async deleteSingleMedia(id:string) {
+    await repository.deleteMedia(id)
+  }
+
+  async deleteFile( key: string) {
+    await deleteMediaObject(key)
+  }
 }

@@ -1,9 +1,9 @@
 import { CATEGORY_MESSAGES, SLUG_MESSAGES } from "../../constant/messages";
 import { AlreadyExistsError, NotFoundError } from "../../utils/errors/app-error";
 import { MediaService } from "../media/media.service";
-import { CompleteUploadRequest } from "../media/media.type";
+import { CompleteUploadFile, CompleteUploadRequest } from "../media/media.type";
 import { CategoryRepository } from "./category.repository";
-import type { CategoryInput } from "./category.validation";
+import { type CategoryInput } from "./category.validation";
 
 const repository = new CategoryRepository();
 const mediaService = new MediaService()
@@ -70,7 +70,7 @@ export class CategoryService {
         if (!dataFromDB) {
             throw new NotFoundError(CATEGORY_MESSAGES.CATEGORY_NOT_EXISTS)
         }
-        if(data.name != dataFromDB?.name) {
+        if(data.name.toLowerCase() != dataFromDB?.name) {
             slug = data.name.toLowerCase().replace(/\s+/g, '-');
 
             const slugExists = await repository.categorySlug(slug);
@@ -92,6 +92,7 @@ export class CategoryService {
             const updateChildCategoryData = {
                     name: data.name.toLowerCase(),
                     slug: slug,
+                    description: data.description ? data.description : dataFromDB.description,
                     status: data.status ? data.status : dataFromDB.status,
                     parent: {
                         connect: {
@@ -108,7 +109,9 @@ export class CategoryService {
         const updateCategoryData = {
             name: data.name.toLowerCase(),
             slug: slug,
-            description: data.description ? data.description : dataFromDB.description
+            description: data.description ? data.description : dataFromDB.description,
+            status: data.status ? data.status : dataFromDB.status,
+            parentId: null
         }
         const updatedCategory = await repository.updateCategory(id, updateCategoryData)
         return updatedCategory
@@ -118,9 +121,13 @@ export class CategoryService {
         const getCategoryWithImage = await repository.viewCategory(id)
         const images = getCategoryWithImage?.categoryImages
         if(images?.length) {
+            const categoryImage = await repository.getCategoryImage(id)
+            const mediaId = categoryImage?.mediaId
             const objectKeys = images.map( image => image.media.objectKey);
             await mediaService.deleteFiles(objectKeys)
             await repository.deleteCategory(id)
+            await mediaService.deleteSingleMedia(mediaId!)
+            return
         }
 
         await repository.deleteCategory(id)
@@ -146,4 +153,29 @@ export class CategoryService {
         return await repository.categoryOptions()
     }
     
+    async replaceCategoryImage(categoryId:number, replaceData: CompleteUploadFile) {
+        const oldImage = await repository.getCategoryImage(categoryId)
+        const oldMediaId = oldImage?.media.id
+        const oldObjectKey = oldImage?.media.objectKey
+        const oldCategoryImageId = oldImage?.id
+        
+        if(!oldMediaId || !oldObjectKey || !oldCategoryImageId) {
+            throw new NotFoundError("media not found")
+        }
+        
+        // delete exisiting categoryimage record
+        await repository.deleteCategoryImage(oldCategoryImageId)
+
+        // delete existing media record
+        await mediaService.deleteSingleMedia(oldMediaId)
+        
+        // new media
+        const newMedia = await mediaService.createMedia(replaceData)
+        // // create new image record
+        const newCategoryImage = await repository.createCategoryImageMedia(categoryId, newMedia.id)
+        
+        // // delete old media file from cloudinary
+        await mediaService.deleteFile(oldObjectKey)
+
+    }
 }

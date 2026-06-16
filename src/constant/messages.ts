@@ -167,5 +167,9 @@ export const MEDIA_MESSAGE = {
     UPLOAD: {
         SUCCESS: "Image upload successful",
         FAILED: "Image upload failed"
+    },
+    REPLACE : {
+        SUCCESS: "Image replaced successfully",
+        FAILED: "Image replaced Unsuccessful"
     }
 }

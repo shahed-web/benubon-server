@@ -2,7 +2,7 @@ import { Router } from "express";
 import { CategoryController } from "./category.controller";
 import { AuthMiddleware } from "../../middleware/auth.middleware";
 
-const router = Router();
+const router = Router({mergeParams: true});
 const controller = new CategoryController();
 const middleware = new AuthMiddleware()
 
@@ -18,5 +18,6 @@ router.patch("/archive/:categoryId", controller.softDelete.bind(controller))
 router.patch("/retrieve/:categoryId", controller.retrieve.bind(controller))
 
 router.post("/complete-upload", controller.categoryImageUploadComplete.bind(controller))
+router.patch("/:categoryId/replace-image", controller.replaceCategoryImage.bind(controller))
 
 export default router;
