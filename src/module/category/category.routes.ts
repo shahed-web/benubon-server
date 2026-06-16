@@ -17,4 +17,6 @@ router.delete("/delete/:categoryId", controller.delete.bind(controller))
 router.patch("/archive/:categoryId", controller.softDelete.bind(controller))
 router.patch("/retrieve/:categoryId", controller.retrieve.bind(controller))
 
+router.post("/complete-upload", controller.categoryImageUploadComplete.bind(controller))
+
 export default router;

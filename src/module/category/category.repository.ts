@@ -30,6 +30,11 @@ export class CategoryRepository {
                             include: {
                                 children: true
                             }
+                        },
+                        categoryImages: {
+                            include: {
+                                media: true
+                            }
                         }
                     }
                 }),
@@ -147,10 +152,10 @@ export class CategoryRepository {
         for (const file of payload.files) {
             const media = await tx.media.create({
                 data: {
-                fileName: file.fileName,
-                objectKey: file.objectKey,
-                mimeType:file.mimeType,
-                size: file.size ?? null,
+                    fileName: file.fileName,
+                    objectKey: file.objectKey,
+                    mimeType:file.mimeType,
+                    size: file.size ?? null,
                 },
             });
 
