@@ -163,18 +163,14 @@ export class CategoryService {
             throw new NotFoundError("media not found")
         }
         
-        // delete exisiting categoryimage record
         await repository.deleteCategoryImage(oldCategoryImageId)
 
-        // delete existing media record
         await mediaService.deleteSingleMedia(oldMediaId)
         
-        // new media
         const newMedia = await mediaService.createMedia(replaceData)
-        // // create new image record
-        const newCategoryImage = await repository.createCategoryImageMedia(categoryId, newMedia.id)
         
-        // // delete old media file from cloudinary
+        await repository.createCategoryImageMedia(categoryId, newMedia.id)
+        
         await mediaService.deleteFile(oldObjectKey)
 
     }

@@ -50,7 +50,7 @@ model Category {
   slug         String         @unique
   description  String?
   imgUrl       String?
-  isSoftDelete Boolean        @default(true)
+  isSoftDelete Boolean        @default(false)
   status       CategoryStatus @default(DRAFT)
   parentId     Int?
   parent       Category?      @relation("CategoryTree", fields: [parentId], references: [id])
@@ -80,7 +80,7 @@ model Product {
   name            String
   slug            String           @unique
   description     String
-  isSoftDelete    Boolean          @default(true)
+  isSoftDelete    Boolean          @default(false)
   isInternational Boolean          @default(true)
   hsCode          String?
   moq             String?
@@ -160,28 +160,28 @@ model Artisan {
   reliabilityScore Int?
   notes            String?
   isActive         Boolean  @default(true)
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  isSoftDelete     Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   products Product[]
 }
 
 model Buyer {
-  id          String  @id @default(uuid())
+  id          String      @id @default(uuid())
   name        String?
-  email       String  @unique
+  email       String      @unique
   country     String?
   companyName String?
   phone       String?
-  isActive    Boolean @default(true)
-
-  type   BuyerType?
-  status BuyerStatus @default(lead)
+  isActive    Boolean     @default(true)
+  type        BuyerType?
+  status      BuyerStatus @default(lead)
 
   lastContactAt DateTime?
   notes         String?
+
+  isSoftDelete Boolean @default(false)
 
   inquiries Inquiry[]
 
@@ -209,8 +209,9 @@ model Inquiry {
   source      String?
   inquiryType String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  isSoftDelete Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([buyerId])
   @@index([productId])
@@ -222,7 +223,8 @@ model User {
   email    String @unique
   password String
 
-  isActive Boolean @default(true)
+  isActive     Boolean @default(true)
+  isSoftDelete Boolean @default(false)
 
   roleId String?
   role   Role?   @relation(fields: [roleId], references: [id])
@@ -233,10 +235,11 @@ model User {
 }
 
 model Role {
-  id          String  @id @default(uuid())
-  name        String  @unique
-  description String?
-  isActive    Boolean @default(true)
+  id           String  @id @default(uuid())
+  name         String  @unique
+  description  String?
+  isActive     Boolean @default(true)
+  isSoftDelete Boolean @default(false)
 
   users User[]
 
@@ -254,9 +257,10 @@ model Permission {
 
   roles RolePermission[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt    DateTime  @default(now())
+  isSoftDelete Boolean   @default(false)
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
 }
 
 model RolePermission {

@@ -1,6 +1,6 @@
 import _ from "lodash";
 import type { NextFunction, Request, Response } from "express";
-import { categorySchema, completeUploadSchema, replaceCategorySchema } from "./category.validation";
+import { categorySchema, completeUploadSchema } from "./category.validation";
 import { CategoryService } from "./category.service";
 import type { CategoryParams, CategoryInputRequest, CategoryResponse, FetchCategoryResponse } from "./category.types";
 import { CATEGORY_MESSAGES, MEDIA_MESSAGE } from "../../constant/messages";
@@ -140,9 +140,6 @@ export class CategoryController {
     async replaceCategoryImage(req: Request<CategoryParams, {}, {}>, res: Response, next: NextFunction) {
         try {
             const categoryId = Number(req.params.categoryId)
-            // console.log(categoryId)
-            // console.log(typeof categoryId)
-            // console.log("hello from body ",req.body)
      
             const parsed = completeUploadSchema.parse(req.body)
             const files = parsed.files[0]

@@ -55,7 +55,9 @@ export const createArtisanSchema = artisanSchema.omit({
   deletedAt: true,
 });
 
-export const updateArtisanSchema = createArtisanSchema.partial();
+export const updateArtisanSchema = createArtisanSchema.partial().extend({
+    isActive: z.boolean().optional(),
+  });
 
 export type Artisan = z.infer<typeof artisanSchema>;
 export type CreateArtisanInput = z.infer<typeof createArtisanSchema>;

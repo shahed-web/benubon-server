@@ -1,20 +1,35 @@
 import { ArtisanCreateInput, ArtisanUpdateInput } from "../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
+import { OrderBy } from "./artisan.types";
 
 export class ArtisanRepository {
-    async getArtisans() {
-        return await prisma.artisan.findMany({
-            where: {
-                deletedAt: null,        
-            }
-        });
+    async getArtisans(skip: number, limit: number, orderBy: OrderBy) {
+        // return await prisma.artisan.findMany({
+        //     where: {
+        //         isSoftDelete: false,        
+        //     }
+        // });
+
+        const [artisan, total] = await prisma.$transaction([
+            prisma.artisan.findMany({
+                    skip: skip,
+                    take: limit,
+                    orderBy: orderBy!,
+                    where: {
+                        isSoftDelete: false
+                    }
+            }),
+            prisma.artisan.count()
+        ])
+
+        return {artisan, total}
     }
 
     async getArtisanById(id: number) {
         return await prisma.artisan.findFirst({
             where: {
                 id,
-                deletedAt: null,
+                isSoftDelete: false,
             }
         })
     }
@@ -34,13 +49,23 @@ export class ArtisanRepository {
 
     async softDeleteArtisan(id: number) {
         return await prisma.artisan.update({
-            where: { id },
+            where: { 
+                id: id 
+            },
             data: {
-                deletedAt: new Date(),
+                isSoftDelete: true,
             }
         })
     }
 
+    async restoreArtisan (id: number) {
+        return await prisma.artisan.update({
+            where: { id },
+            data: {
+                isSoftDelete: false,
+            }
+        })
+    }
     async permanentDeleteArtisan(id: number) {
         return await prisma.artisan.delete({
             where: { id }
