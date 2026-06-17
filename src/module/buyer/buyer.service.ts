@@ -90,13 +90,13 @@ export class BuyerService {
         return buyer;
     }
 
-    async deleteBuyer(id: string) {
+    async softDelete(id: string) {
         const buyer = repository.softDeleteBuyer(id);
         return buyer;
     }
 
-    async retriveDeletedBuyer(id: string) {
-        const buyer = repository.retriveDeletedBuyer(id);
+    async restoreDeletedBuyer(id: string) {
+        const buyer = repository.restoreDeletedBuyer(id);
 
         return buyer;
     }

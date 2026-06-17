@@ -137,6 +137,10 @@ export const BUYER_MESSAGE = {
         SUCCESS:"Buyer fetched",
         FAILED: "Buyer fetch failed"
     },
+    RESTORE:{
+        SUCCESS:"Buyer restored",
+        FAILED: "Buyer restore failed"
+    },
     DELETE:{
         SUCCESS:"Buyer deleted",
         FAILED: "Buyer delete failed"

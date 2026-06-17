@@ -11,7 +11,8 @@ export class BuyerController {
             const buyer = await buyerService.createBuyer(parsed)
             res.status(201).json({
                 success: true,
-                message: BUYER_MESSAGE.CREATE.SUCCESS
+                message: BUYER_MESSAGE.CREATE.SUCCESS,
+                data: buyer
             })
         }catch(error) {
             next(error)
@@ -60,10 +61,10 @@ export class BuyerController {
         }
     }
 
-    async deleteBuyer (req: Request, res: Response, next: NextFunction) {
+    async softDelete (req: Request, res: Response, next: NextFunction) {
         try{
             const id = String(req.params.id)
-            await buyerService.deleteBuyer(id)
+            await buyerService.softDelete(id)
             res.status(200).json({
                 success: true,
                 message: BUYER_MESSAGE.DELETE.SUCCESS
@@ -76,10 +77,10 @@ export class BuyerController {
     async retriveDeletedBuyer (req: Request, res: Response, next: NextFunction) {
         try{
             const id = String(req.params.id)
-            const buyer = await buyerService.retriveDeletedBuyer(id)
+            const buyer = await buyerService.restoreDeletedBuyer(id)
             res.status(200).json({
                 success: true,
-                message: BUYER_MESSAGE.FETCH.SUCCESS,
+                message: BUYER_MESSAGE.RESTORE.SUCCESS,
                 data: buyer
             })
         }catch(error) {

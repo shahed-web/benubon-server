@@ -49,18 +49,18 @@ export class BuyerRepository {
                 id,
             },
             data: {
-                deletedAt: new Date(),
+                isSoftDelete: true
             },
         });
     }
 
-    async retriveDeletedBuyer(id: string) {
-        await prisma.buyer.findFirst({
+    async restoreDeletedBuyer(id: string) {
+        await prisma.buyer.update({
             where: {
-                id,
-                deletedAt: {
-                    not: null
-                }
+                id
+            },
+            data: {
+                isSoftDelete: false
             }
         });
     }
