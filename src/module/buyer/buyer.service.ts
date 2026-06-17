@@ -36,9 +36,23 @@ export class BuyerService {
         return buyer
     }
 
-    async getBuyers() {
-        const buyers = await repository.getBuyers();
-        return buyers;
+    async getBuyers(page=1, limit=10) {
+        const skip = (page - 1) * limit
+        const orderBy = {
+            createdAt: 'desc' as const
+        }
+       const {buyers, total}   = await repository.getBuyers(skip, limit, orderBy);
+        return {
+            buyers,
+             meta: {
+                total,
+                totalPages: Math.ceil(total / limit),
+                currentPage: page,
+                limit: limit,
+                hasNextPage: page * limit < total,
+                hasPreviousPage: page > 1
+            }
+        };
     }
 
     async getBuyerById(id: string) {

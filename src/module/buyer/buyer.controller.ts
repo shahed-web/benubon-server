@@ -21,11 +21,13 @@ export class BuyerController {
 
     async getBuyers (req: Request, res: Response, next: NextFunction) {
         try {
-            const buyers = await buyerService.getBuyers()
+            const page = Number(req.query.page) || 1
+            const limit = Number(req.query.limit) || 10
+            const {buyers, meta} = await buyerService.getBuyers(page, limit)
             res.status(200).json({
                 success: true,
                 message: BUYER_MESSAGE.FETCH.SUCCESS,
-                data: buyers
+                data: {buyers, meta}
             })
         } catch(error) {
             next(error)

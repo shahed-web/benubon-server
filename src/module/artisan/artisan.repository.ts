@@ -4,11 +4,6 @@ import { OrderBy } from "./artisan.types";
 
 export class ArtisanRepository {
     async getArtisans(skip: number, limit: number, orderBy: OrderBy) {
-        // return await prisma.artisan.findMany({
-        //     where: {
-        //         isSoftDelete: false,        
-        //     }
-        // });
 
         const [artisan, total] = await prisma.$transaction([
             prisma.artisan.findMany({

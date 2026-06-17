@@ -1,5 +1,6 @@
 import { BuyerCreateInput, BuyerUpdateInput } from "../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
+import { OrderBy } from "./buyer.types";
 
 export class BuyerRepository {
     async buyerExists(email: string) {
@@ -16,15 +17,20 @@ export class BuyerRepository {
         });
     }
 
-    async getBuyers() {
-        return await prisma.buyer.findMany({
-            where: {
-                deletedAt: null,
-            },
-            orderBy: {
-                createdAt: "desc",
-            },
-        });
+    async getBuyers(skip: number, limit: number, orderBy: OrderBy) {
+
+    const [buyers, total] = await prisma.$transaction([
+            prisma.buyer.findMany({
+                    skip: skip,
+                    take: limit,
+                    orderBy: orderBy!,
+                    where: {
+                        isSoftDelete: false
+                    }
+            }),
+            prisma.buyer.count()
+        ])
+        return {buyers, total}
     }
 
     async getBuyerById(id: string) {
