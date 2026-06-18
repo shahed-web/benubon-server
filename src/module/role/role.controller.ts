@@ -8,11 +8,13 @@ const roleService = new RoleService()
 export class RoleController {
     async getRoles (req: Request, res: Response, next: NextFunction) {
         try {
-            const roles = await roleService.getRoles()
+            const page = Number(req.query.page) || 1
+            const limit = Number(req.query.limit) || 10
+            const {roles, meta} = await roleService.getRoles(page, limit)
             res.status(200).json({
                 success: true,
                 message: ROLE_MESSAGES.FETCH.SUCCESS,
-                data: roles
+                data: {roles, meta}
             })
         }catch(error) {
             next(error)

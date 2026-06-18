@@ -1,9 +1,24 @@
 import { RoleCreateInput, RoleUpdateInput } from "../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
+import { OrderBy } from "./role.types";
 
 export class RoleRepository {
-    async getRoles() {
-        return await prisma.role.findMany()
+    async getRoles(skip: number, limit: number, orderBy: OrderBy) {
+        // return await prisma.role.findMany()
+
+        const [roles, total] = await prisma.$transaction([
+            prisma.role.findMany({
+                skip: skip,
+                take: limit,
+                orderBy: orderBy!,
+                where: {
+                    isSoftDelete: false
+                }
+            }),
+            prisma.role.count()
+        ])
+
+        return {roles, total}
     }
 
     async createRole (data: RoleCreateInput) {
