@@ -251,11 +251,11 @@ model Role {
 }
 
 model Permission {
-  id          String  @id @default(uuid())
-  name        String  @unique
-  description String?
-
-  roles RolePermission[]
+  id             String           @id @default(uuid())
+  name           String           @unique
+  description    String?
+  permissionCode String
+  roles          RolePermission[]
 
   createdAt    DateTime  @default(now())
   isSoftDelete Boolean   @default(false)

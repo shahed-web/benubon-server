@@ -95,7 +95,19 @@ export const PERMISSION_MESSAGES = {
     ASSIGN: {
         SUCCESS: "Permission assigned successfully",
         FAILED: "Permission assign unsuccessful",
-    }
+    },
+    UPDATE: {
+        SUCCESS: "Permission updated successfully",
+        FAILED: "Permission update failed",
+    },
+    FETCH: {
+        SUCCESS: "Permission fetched successfully",
+        FAILED: "Permission fetch unsuccessful",
+    },
+    DELETE: {
+        SUCCESS: "Permission deleted successfully",
+        FAILED: "Permission delete failed",
+    },
 }
 
 export const ROLE_MESSAGES = {
