@@ -71,7 +71,8 @@ export const AUTH_MESSAGES = {
         FAILED: "Unauthorized",
         EXPIRED: "Token expired",
         FORBIDDEN: "Forbidden",
-        INVALID_TOKEN: "Invalid token"
+        INVALID_TOKEN: "Invalid token",
+        INVALID_SESSION: "Invalid session"
     }
 }
 

@@ -90,16 +90,29 @@ export class AuthController {
     }
 
     async authUserData (req:AuthenticateRequest, res:Response, next: NextFunction) {
+       
+        console.log("controller in")
         try {
             const user = req.user
+            const refreshToken = req.cookies.refreshToken
             if (!user) {
+                console.log("nope")
                 throw new UnauthorizedError(AUTH_MESSAGES.AUTHORIZE.FAILED)
             }
-            const data = await authService.authUserData(user.id)
+            const data = await authService.authUserData(user.id, refreshToken)
+            res.cookie("refreshToken", data.refreshToken, {
+                httpOnly: true,
+                sameSite: "lax",
+                secure: true
+            })
             res.status(200).json({
-                data
+                data: {
+                    user: data.user,
+                    accessToken: data.accessToken
+                }
             })
         } catch(error) {
+            console.log(error)
             next(error)
         }
     }

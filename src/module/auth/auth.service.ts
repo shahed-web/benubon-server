@@ -97,12 +97,18 @@ export class AuthService {
         }
     }
 
-    async authUserData (id: string) {
+    async authUserData (id: string, refreshToken: string) {
         const userData = await repository.authUser(id) 
         const permissions = userData?.role?.permissions.map(item => item.permission.name) || []
         if(!userData) {
             throw new NotFoundError("User not found")
         }
+
+        const sessionToken = await repository.getSession(refreshToken)
+        if (!sessionToken) {
+            throw new UnauthorizedError(AUTH_MESSAGES.AUTHORIZE.INVALID_SESSION)
+        }
+
         const jwtPayload: JwtPayloadType = {
             id: userData.id,
             name: userData.name,
@@ -118,7 +124,8 @@ export class AuthService {
         return {
             user,
             permissions,
-            accessToken
+            accessToken,
+            refreshToken
         }
     }
 
