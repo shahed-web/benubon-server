@@ -1,5 +1,7 @@
+import { permission } from "node:process";
 import { prisma } from "../../lib/prisma";
 import { AuthInput } from "./auth.validations";
+import { getExpiryTime } from "./auth.utils";
 
 export class AuthRepository {
     async userExists(email: string) {
@@ -34,7 +36,8 @@ export class AuthRepository {
     async createSession(refreshToken: string) {
         return await prisma.sessions.create({
             data: {
-                token: refreshToken
+                token: refreshToken,
+                expiredAt: getExpiryTime()
             }
         })
     }
@@ -49,6 +52,33 @@ export class AuthRepository {
 
     async getSession(refreshToken: string) {
         return await prisma.sessions.findUnique({
+            where: {
+                token: refreshToken
+            }
+        })
+    }
+
+    async authUser(id: string) {
+        return await prisma.user.findUnique({
+            where: {
+                id
+            },
+            include: {
+                role: {
+                    include: {
+                        permissions: {
+                            include: {
+                                permission: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    async revokeSession (refreshToken: string) {
+        await prisma.sessions.deleteMany({
             where: {
                 token: refreshToken
             }

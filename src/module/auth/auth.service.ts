@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { AUTH_MESSAGES } from "../../constant/messages";
+import { AUTH_MESSAGES, USER_MESSAGES } from "../../constant/messages";
 import { hashPassword, validatePassword } from "../../provider/bcrypt.provider";
 import { generateJWT, jwtVerify } from "../../provider/jwt.provider";
 import { AlreadyExistsError, NotFoundError, UnauthorizedError } from "../../utils/errors/app-error";
@@ -95,5 +95,34 @@ export class AuthService {
             success: true,
             accessToken: accessToken
         }
+    }
+
+    async authUserData (id: string) {
+        const userData = await repository.authUser(id) 
+        const permissions = userData?.role?.permissions.map(item => item.permission.name) || []
+        if(!userData) {
+            throw new NotFoundError("User not found")
+        }
+        const jwtPayload: JwtPayloadType = {
+            id: userData.id,
+            name: userData.name,
+            email: userData.email,
+            isActive: userData.isActive,
+            role: userData.role?.name || "",
+            permissions
+        }
+        const accessToken = generateJWT(jwtPayload, envConfig.JWT.ACCESS_TOKEN_EXPIRY)
+
+        const user = _.pick(userData, ["id", "name", "email", "role", "isActive"])
+
+        return {
+            user,
+            permissions,
+            accessToken
+        }
+    }
+
+    async revokeSession(token: string) {
+        await repository.revokeSession(token)
     }
 }

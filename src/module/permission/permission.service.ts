@@ -48,6 +48,7 @@ export class PermissionService {
         return await repository.getPermissionById(id)
     }
 
+
     async deletePermission (id: string) {
         await repository.deletePermission(id)
     }

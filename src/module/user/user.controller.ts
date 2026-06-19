@@ -28,6 +28,35 @@ export class UserController {
         }
     }
 
+    async userDetails(req: Request<{id: string}, {}, {}>, res: Response, next: NextFunction) {
+        try{
+            const id = req.params.id
+            const user = await userService.userDetails(id)
+            res.json({
+                success: true,
+                message: USER_MESSAGES.FETCH.SUCCESS,
+                data: user
+            })
+        } catch(error) {
+            next(error)
+        }
+    }
+
+    async getUser(req:Request, res:Response, next: NextFunction) {
+        try{
+            const page = Number(req.query.page) || 1
+            const limit = Number(req.query.limit) || 10
+            const {users, meta} = await userService.getUser(page, limit)
+            res.status(200).json({
+                success: true,
+                message: USER_MESSAGES.FETCH.SUCCESS,
+                data: {users, meta}
+            })
+        } catch(error) {
+            next(error)
+        }
+    }
+
     async assignRole (req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.params.userId as string

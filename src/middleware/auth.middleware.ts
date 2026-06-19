@@ -65,4 +65,24 @@ export class AuthMiddleware {
             next()
         }
     }
+
+    async authUserCheck(req: AuthenticateRequest, res: Response, next: NextFunction) {
+        try {
+            const refreshToken = req.cookies.refreshToken
+            if (!refreshToken) {
+                return res.status(401).json({
+                    success: false,
+                    message: AUTH_MESSAGES.AUTHORIZE.FAILED
+                })
+            }
+            const user = jwtVerify(refreshToken)
+            req.user = user
+            next()
+        } catch(error) {
+            return res.status(401).json({
+                success: false,
+                message: AUTH_MESSAGES.AUTHORIZE.INVALID_TOKEN
+            })
+        }
+    }
 }

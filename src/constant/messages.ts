@@ -62,6 +62,10 @@ export const AUTH_MESSAGES = {
         FAILED: "Login failed",
         USER_NOT_FOUND: "User not found"
     },
+    LOGOUT: {
+        SUCCESS: "Logout successful",
+        FAILED: "Logout failed"
+    },
     AUTHORIZE: {
         SUCCESS: "Authorized",
         FAILED: "Unauthorized",
@@ -84,6 +88,10 @@ export const USER_MESSAGES = {
     DELETE : {
         SUCCESS: "User deleted",
         FAILED: "User delete failed"
+    },
+    FETCH : {
+        SUCCESS: "User fetched",
+        FAILED: "User fetch unsuccessful"
     }
 }
 export const PERMISSION_MESSAGES = {

@@ -4,6 +4,7 @@ import { authSchema } from "./auth.validations";
 import { AuthService } from "./auth.service";
 import { AUTH_MESSAGES } from "../../constant/messages";
 import { UnauthorizedError } from "../../utils/errors/app-error";
+import { AuthenticateRequest } from "../../middleware/auth.middleware";
 
 const authService = new AuthService()
 
@@ -26,15 +27,15 @@ export class AuthController {
             const parsed = authSchema.parse(req.body)
             const loginData = await authService.login(parsed)
 
-            res.cookie("accessToken", loginData.accessToken, {
-                httpOnly: true,
-                sameSite: "strict",
-                secure: true
-            })
+            // res.cookie("accessToken", loginData.accessToken, {
+            //     httpOnly: true,
+            //     sameSite: "lax",
+            //     secure: true
+            // })
             
             res.cookie("refreshToken", loginData.refreshToken, {
                 httpOnly: true,
-                sameSite: "strict",
+                sameSite: "lax",
                 secure: true
             })
             
@@ -71,7 +72,7 @@ export class AuthController {
 
             res.cookie("accessToken", accessToken, {
                 httpOnly: true,
-                sameSite: "strict",
+                sameSite: "lax",
                 secure: true
             })
 
@@ -84,6 +85,43 @@ export class AuthController {
                 }
             })
         }catch(error) {
+            next(error)
+        }
+    }
+
+    async authUserData (req:AuthenticateRequest, res:Response, next: NextFunction) {
+        try {
+            const user = req.user
+            if (!user) {
+                throw new UnauthorizedError(AUTH_MESSAGES.AUTHORIZE.FAILED)
+            }
+            const data = await authService.authUserData(user.id)
+            res.status(200).json({
+                data
+            })
+        } catch(error) {
+            next(error)
+        }
+    }
+
+    async logout(req: Request, res: Response, next: NextFunction) {
+        try {
+            const refreshToken = req.cookies.refreshToken;
+            if(refreshToken) {
+                await authService.revokeSession(refreshToken)
+            }
+
+            res.clearCookie("refreshToken", {
+                httpOnly: true,
+                sameSite: "lax",
+                secure: false, // true in production HTTPS
+            });
+
+            res.status(200).json({
+                success: true,
+                message: AUTH_MESSAGES.LOGOUT.SUCCESS
+            })
+        } catch (error) {
             next(error)
         }
     }

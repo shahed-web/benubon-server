@@ -7,8 +7,10 @@ import roleRoutes from "./module/role/role.routes";
 import mediaRoutes from "./module/media/media.routes";
 import artisanRoutes from "./module/artisan/artisan.routes"
 import buyerRoutes from "./module/buyer/buyer.routes"
+import userRoutes from "./module/user/user.routes"
 
 export default async (app: Application) => {
+    app.use("/api/user", userRoutes)
     app.use("/api/category", categoryRoutes)
     app.use("/api/product", productRoutes)
     app.use("/api/auth", authRoutes)

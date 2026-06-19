@@ -274,9 +274,10 @@ model RolePermission {
 }
 
 model Sessions {
-  id        String   @id @default(uuid())
-  token     String   @unique @db.VarChar(500)
-  createdAt DateTime @default(now()) @db.Timestamp(0)
+  id        String    @id @default(uuid())
+  token     String    @unique @db.VarChar(500)
+  createdAt DateTime  @default(now()) @db.Timestamp(0)
+  expiredAt DateTime
 }
 
 model Media {

@@ -1,5 +1,6 @@
 import { UserCreateInput, UserUpdateInput } from "../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
+import { OrderBy } from "./user.types";
 
 export class UserRepository {
     async createUser (data: UserCreateInput) {
@@ -13,6 +14,21 @@ export class UserRepository {
                 id: id
             }
         })
+    }
+
+    async getUsers (skip: number, limit: number, orderBy: OrderBy) {
+        const [users, total] = await prisma.$transaction([
+            prisma.user.findMany({
+                    skip: skip,
+                    take: limit,
+                    orderBy: orderBy!,
+                    // where: {
+                    //     isSoftDelete: false
+                    // }
+            }),
+            prisma.user.count()
+        ])
+        return {users, total}
     }
     async assignRole (userId: string, roleId: string) {
         return prisma.user.update({
