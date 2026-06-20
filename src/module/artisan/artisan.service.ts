@@ -29,6 +29,7 @@ export class ArtisanService {
     async createArtisan(artisanData: CreateArtisanInput) {
         const data = {
             name: artisanData.name,
+            phone: artisanData.phone,
             materials: artisanData.materials,
             location: artisanData.location? artisanData.location : null,
             monthlyCapacity: artisanData.monthlyCapacity ? artisanData.monthlyCapacity : null,
@@ -40,6 +41,7 @@ export class ArtisanService {
     async updateArtisan(id: number, artisanData: UpdateArtisanInput) {
         const data = removeUndefinedFields({
             name: artisanData.name,
+            phone: artisanData.phone,
             materials: artisanData.materials,
             location: artisanData.location,
             monthlyCapacity: artisanData.monthlyCapacity,

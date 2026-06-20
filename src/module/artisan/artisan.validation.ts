@@ -8,6 +8,11 @@ export const artisanSchema = z.object({
     .min(1, "Name is required")
     .max(255, "Name is too long"),
 
+    phone: z
+      .string()
+      .min(1, "Name is required")
+      .max(255, "Name is too long"),
+
   location: z
     .string()
     .max(255, "Location is too long")

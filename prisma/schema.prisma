@@ -155,6 +155,7 @@ model Artisan {
   id               Int      @id @default(autoincrement())
   name             String
   location         String?
+  phone            String
   materials        String[]
   monthlyCapacity  Int?
   reliabilityScore Int?
@@ -274,9 +275,9 @@ model RolePermission {
 }
 
 model Sessions {
-  id        String    @id @default(uuid())
-  token     String    @unique @db.VarChar(500)
-  createdAt DateTime  @default(now()) @db.Timestamp(0)
+  id        String   @id @default(uuid())
+  token     String   @unique @db.VarChar(500)
+  createdAt DateTime @default(now()) @db.Timestamp(0)
   expiredAt DateTime
 }
 
