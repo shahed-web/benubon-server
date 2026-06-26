@@ -136,10 +136,10 @@ export class ProductRepository {
 
             const product = await tx.product.findUnique({
                 where: {
-                id: payload.id,
+                    id: payload.id,
                 },
                 select: {
-                id: true,
+                    id: true,
                 },
             });
 
@@ -166,25 +166,25 @@ export class ProductRepository {
 
             await tx.productImage.create({
                 data: {
-                productId: payload.id,
-                mediaId: media.id,
+                    productId: payload.id,
+                    mediaId: media.id,
                 },
             });
             }
 
             await tx.product.update({
-            where: {
-                id: payload.id,
-            },
-            data: {
-                status: "ACTIVE",
-            },
+                where: {
+                    id: payload.id,
+                },
+                data: {
+                    status: "ACTIVE",
+                },
             });
 
             return {
-            productId: payload.id,
-            uploadedImages: mediaRecords.length,
-            media: mediaRecords,
+                productId: payload.id,
+                uploadedImages: mediaRecords.length,
+                media: mediaRecords,
             };
         }
         );

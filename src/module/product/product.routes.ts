@@ -12,5 +12,7 @@ router.patch("/retrieve/:productId", controller.retrieveProduct.bind(controller)
 
 router.delete("/delete/:productId", controller.deleteProduct.bind(controller))
 
+router.post("/complete-upload", controller.productImageUploadComplete.bind(controller))
+// router.patch("/:productId/replace-image", controller.replaceProductImage.bind(controller))
 
 export default router;

@@ -90,8 +90,7 @@ export class AuthController {
     }
 
     async authUserData (req:AuthenticateRequest, res:Response, next: NextFunction) {
-       
-        console.log("controller in")
+    
         try {
             const user = req.user
             const refreshToken = req.cookies.refreshToken

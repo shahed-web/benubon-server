@@ -2,7 +2,8 @@ import type { NextFunction, Request, Response } from "express"
 import type { ProductInputRequest, ProductParams, ProductResponse } from "./product.types"
 import { productSchema } from "./product.validation"
 import { ProductService } from "./product.service"
-import { PRODUCT_MESSAGES } from "../../constant/messages"
+import { MEDIA_MESSAGE, PRODUCT_MESSAGES } from "../../constant/messages"
+import { completeUploadSchema } from "../media/media.validation"
 
 const productService = new ProductService()
 export class ProductController {
@@ -90,5 +91,42 @@ export class ProductController {
             next(error)
         }
 
+    }
+
+    async productImageUploadComplete(req: Request, res: Response, next: NextFunction) {
+        try{
+            const parsed = completeUploadSchema.parse(req.body);
+            const result = await productService.completeUpload(parsed);
+            res.json({
+                success: true,
+                message: MEDIA_MESSAGE.UPLOAD.SUCCESS,
+                data: result
+            })
+        }catch(error) {
+            next(error);
+        }
+    }
+
+    async replaceProductImage(req: Request<ProductParams, {}, {}>, res: Response, next: NextFunction) {
+        try {
+            const productId = Number(req.params.productId)
+        
+            const parsed = completeUploadSchema.parse(req.body)
+            const files = parsed.files[0]
+
+            if (!files) {
+                throw new Error("No file provided")
+            }
+
+            // await productService.replaceProductImage(productId, files)
+
+            res.json({
+                success: true,
+                message: MEDIA_MESSAGE.REPLACE.SUCCESS
+            })
+        } catch (error) {
+            console.log(error)
+            next(error)
+        }
     }
 }

@@ -143,7 +143,7 @@ export class CategoryRepository {
                 select: {
                     id: true,
                 },
-                });
+            });
 
             if (!category) {
                 throw new NotFoundError(

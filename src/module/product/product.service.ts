@@ -1,3 +1,4 @@
+import { CompleteUploadFile, CompleteUploadRequest } from "../media/media.type";
 import { ProductRepository } from "./product.repository";
 import type { ProductInput } from "./product.validation";
 
@@ -41,5 +42,31 @@ export class ProductService {
 
     async deleteProduct(id: number) {
         await repository.deleteProduct(id)
+    }
+
+    async completeUpload (payload: CompleteUploadRequest) {
+        return await repository.completeUpload(payload)
+    }
+
+    async replaceProductImage(productId:number, replaceData: CompleteUploadFile) {
+        // const oldImage = await repository.getCategoryImage(productId)
+        // const oldMediaId = oldImage?.media.id
+        // const oldObjectKey = oldImage?.media.objectKey
+        // const oldCategoryImageId = oldImage?.id
+        
+        // if(!oldMediaId || !oldObjectKey || !oldCategoryImageId) {
+        //     throw new NotFoundError("media not found")
+        // }
+        
+        // await repository.deleteCategoryImage(oldCategoryImageId)
+
+        // await mediaService.deleteSingleMedia(oldMediaId)
+        
+        // const newMedia = await mediaService.createMedia(replaceData)
+        
+        // await repository.createCategoryImageMedia(productId, newMedia.id)
+        
+        // await mediaService.deleteFile(oldObjectKey)
+
     }
 }
