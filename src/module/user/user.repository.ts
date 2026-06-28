@@ -33,7 +33,12 @@ export class UserRepository {
                         isSoftDelete: true,
                         roleId: true,
                         createdAt: true,
-                        updatedAt: true
+                        updatedAt: true,
+                        role: {
+                            select: {
+                                name: true
+                            }
+                        }
                     }
             }),
             prisma.user.count()
