@@ -25,6 +25,16 @@ export class UserRepository {
                     // where: {
                     //     isSoftDelete: false
                     // }
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        isActive: true,
+                        isSoftDelete: true,
+                        roleId: true,
+                        createdAt: true,
+                        updatedAt: true
+                    }
             }),
             prisma.user.count()
         ])
