@@ -28,9 +28,9 @@ export class UserController {
         }
     }
 
-    async userDetails(req: Request<{id: string}, {}, {}>, res: Response, next: NextFunction) {
+    async userDetails(req: Request<{userId: string}, {}, {}>, res: Response, next: NextFunction) {
         try{
-            const id = req.params.id
+            const id = req.params.userId
             const user = await userService.userDetails(id)
             res.json({
                 success: true,

@@ -10,7 +10,7 @@ import buyerRoutes from "./module/buyer/buyer.routes"
 import userRoutes from "./module/user/user.routes"
 
 export default async (app: Application) => {
-    app.use("/api/user", userRoutes)
+    app.use("/api/users", userRoutes)
     app.use("/api/category", categoryRoutes)
     app.use("/api/product", productRoutes)
     app.use("/api/auth", authRoutes)

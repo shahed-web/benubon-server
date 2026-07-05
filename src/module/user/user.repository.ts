@@ -12,6 +12,16 @@ export class UserRepository {
         return await prisma.user.findUnique({
             where: {
                 id: id
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                isActive: true,
+                isSoftDelete: true,
+                roleId: true,
+                createdAt: true,
+                updatedAt: true
             }
         })
     }
